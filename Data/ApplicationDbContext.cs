@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using MedicalAppointmentsSystem.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace MedicalAppointmentsSystem.Data
@@ -9,5 +10,7 @@ namespace MedicalAppointmentsSystem.Data
         {
             
         }
+
+        public DbSet<ApplicationUser> ApplicationUsers { get; set; }
     }
 }
