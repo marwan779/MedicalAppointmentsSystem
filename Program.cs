@@ -2,7 +2,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MedicalAppointmentsSystem.Data;
 using Microsoft.AspNetCore.Identity.UI.Services;
-using MedicalAppointmentsSystem.Services;
+using MedicalAppointmentsSystem.Configurations;
+using MedicalAppointmentsSystem.Services.MailService;
+using MailKit;
 namespace MedicalAppointmentsSystem
 {
     public class Program
@@ -20,7 +22,11 @@ namespace MedicalAppointmentsSystem
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
+            builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
+
             builder.Services.AddTransient<IEmailSender, EmailSender>();    
+            
+            builder.Services.AddTransient<IEmailSerivce, EmailSerivce>();
 
             var app = builder.Build();
 
