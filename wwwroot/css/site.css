@@ -1,22 +1,67 @@
+
+:root {
+    --medical-primary: #3498db;
+    --medical-success: #2ecc71;
+    --medical-danger: #e74c3c;
+    --medical-light: #f8f9fa;
+}
+
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
+}
+
+
+/* Navbar styling */
+.navbar {
+    background-color: var(--medical-primary) !important;
+}
+
+.navbar-brand, .nav-link {
+    color: white !important;
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: var(--medical-primary);
+    border: none;
+}
+
+.btn-success {
+    background-color: var(--medical-success);
+}
+
+/* Cards (for appointments) */
+.appointment-card {
+    border-left: 4px solid var(--medical-primary);
+    border-radius: 8px;
+}
+
+/* Table styling */
+.table-medical {
+    border-collapse: separate;
+    border-spacing: 0 10px;
+}
+
+.table-medical tr {
+        background-color: white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }

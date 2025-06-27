@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MedicalAppointmentsSystem.Data;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using MedicalAppointmentsSystem.Services;
 namespace MedicalAppointmentsSystem
 {
     public class Program
@@ -12,11 +14,13 @@ namespace MedicalAppointmentsSystem
 
             builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 
-            builder.Services.AddDefaultIdentity<IdentityUser>().AddEntityFrameworkStores<ApplicationDbContext>();
+            builder.Services.AddIdentity<IdentityUser,  IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
             builder.Services.AddRazorPages();
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            builder.Services.AddTransient<IEmailSender, EmailSender>();    
 
             var app = builder.Build();
 
