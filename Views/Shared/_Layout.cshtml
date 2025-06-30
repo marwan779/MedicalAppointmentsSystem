@@ -4,9 +4,47 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - MedicalAppointmentsSystem</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/MedicalAppointmentsSystem.styles.css" asp-append-version="true" />
+    <style>
+        /* Custom footer styling to match medical theme */
+        .footer {
+            background-color: #3498db; /* Primary blue color */
+            color: white;
+            padding: 1.1 rem 0;
+            margin-top: 2rem;
+        }
+
+            .footer a {
+                color: #f8f9fa; /* Light color for links */
+                text-decoration: none;
+                transition: color 0.2s ease;
+            }
+
+                .footer a:hover {
+                    color: white;
+                    text-decoration: underline;
+                }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 1rem;
+            font-size: 1.25rem;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -37,9 +75,21 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - MedicalAppointmentsSystem - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <footer class="footer">
+        <div class="container footer-content">
+            <div>
+                &copy; 2025 - MedicalAppointmentsSystem
+            </div>
+            <div class="footer-links">
+                <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy Policy</a>
+                <a asp-area="" asp-controller="Home" asp-action="Index">Terms of Service</a>
+                <a asp-area="" asp-controller="Home" asp-action="Index">Contact Us</a>
+            </div>
+            <div class="social-icons">
+                <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+                <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+            </div>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
