@@ -1,0 +1,107 @@
+﻿@using MedicalAppointmentsSystem.Views.ViewModels
+
+@model DoctorInformationVM
+
+@{
+    ViewData["Title"] = "Doctor Profile";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-id-card me-2"></i>Professional Profile</h5>
+                </div>
+                <div class="card-body text-center">
+                    <img src="@Model.PhotoPath" class="rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;" alt="Doctor Photo">
+                    <h4>Dr. @Model.DoctorName</h4>
+                    <h5 class="text-muted">@Model.Specialization</h5>
+                    <hr />
+
+                    <div class="d-grid gap-2">
+                        <a href="@Model.LicenseImagePath" target="_blank" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-file-alt me-2"></i>View License
+                        </a>
+                        <a href="@Model.IdProofPath" target="_blank" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-id-badge me-2"></i>View ID
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-phone-alt me-2"></i>Emergency Contact</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-1"><strong>Phone:</strong></p>
+                    <p>@Model.EmergencyPhone</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-graduation-cap me-2"></i>Education</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Medical School:</strong></p>
+                            <p>@Model.MedicalSchool</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Graduation Year:</strong></p>
+                            <p>@Model.GraduationYear</p>
+                        </div>
+                    </div>
+                    <p class="mb-1"><strong>Years of Experience:</strong></p>
+                    <p>@Model.YearsExperience years</p>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-hospital me-2"></i>Current Practice</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Hospital:</strong></p>
+                            <p>@Model.HospitalAffiliation</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Department:</strong></p>
+                            <p>@Model.Department</p>
+                        </div>
+                    </div>
+                    <p class="mb-1"><strong>Position:</strong></p>
+                    <p>@Model.Position</p>
+                    <p class="mb-1"><strong>License Number:</strong></p>
+                    <p>@Model.LicenseNumber</p>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-user-md me-2"></i>Professional Bio</h5>
+                </div>
+                <div class="card-body">
+                    <p>@Model.Bio</p>
+                    <div class="text-muted small mt-3">
+                        <i class="fas fa-calendar-alt me-2"></i>Registered on @Model.RegistrationDate.ToString("MMMM dd, yyyy")
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="mt-4 text-center">
+        <a asp-action="EditDoctorInformation" class="btn btn-primary">
+            <i class="fas fa-edit me-2"></i>Edit Profile
+        </a>
+    </div>
+</div>

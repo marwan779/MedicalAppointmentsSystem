@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using MedicalAppointmentsSystem.Configurations;
 using MedicalAppointmentsSystem.Services.MailService;
 using MailKit;
+using MedicalAppointmentsSystem.Services.ImageService;
 namespace MedicalAppointmentsSystem
 {
     public class Program
@@ -24,9 +25,13 @@ namespace MedicalAppointmentsSystem
 
             builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
 
+
+            /*============================== SERVICES ==============================*/
             builder.Services.AddTransient<IEmailSender, EmailSender>();    
             
             builder.Services.AddTransient<IEmailSerivce, EmailSerivce>();
+
+            builder.Services.AddScoped<IImageService, ImageService>();
 
             var app = builder.Build();
 
@@ -46,6 +51,10 @@ namespace MedicalAppointmentsSystem
             app.UseAuthentication();
             app.UseAuthorization();
             app.MapRazorPages();
+
+            //app.MapControllerRoute(
+            // name: "areas",
+            // pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
             app.MapControllerRoute(
                 name: "default",
