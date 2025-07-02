@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace MedicalAppointmentsSystem.Views.ViewModels
+namespace MedicalAppointmentsSystem.Models.ViewModels.Doctor
 {
     public class DoctorInformationVM
     {

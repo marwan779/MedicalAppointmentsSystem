@@ -12,5 +12,29 @@
             User,
             Admin
         };
+
+        public static List<string> MedicalSpecializations = new List<string>
+        {
+        "Cardiology",
+        "Dermatology",
+        "Neurology",
+        "Pediatrics",
+        "Orthopedics",
+        "General Surgery",
+        "Internal Medicine",
+        "Obstetrics and Gynecology (OB/GYN)",
+        "Psychiatry",
+        "Radiology",
+        "Anesthesiology",
+        "Ophthalmology",
+        "Otolaryngology (ENT)",
+        "Urology",
+        "Endocrinology",
+        "Oncology",
+        "Gastroenterology",
+        "Nephrology",
+        "Rheumatology"
+        };
+
     }
 }

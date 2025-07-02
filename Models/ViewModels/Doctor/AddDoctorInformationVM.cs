@@ -1,7 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace MedicalAppointmentsSystem.Views.ViewModels
+namespace MedicalAppointmentsSystem.Models.ViewModels.Doctor
 {
     public class AddDoctorInformationVM
     {
@@ -13,6 +15,8 @@ namespace MedicalAppointmentsSystem.Views.ViewModels
         [Required(ErrorMessage = "Specialization is required")]
         [StringLength(100, ErrorMessage = "Specialization cannot exceed 100 characters")]
         public string Specialization { get; set; } = string.Empty;
+        [ValidateNever]
+        public IEnumerable<SelectListItem> SpecializationList { get; set; }
 
         [Required(ErrorMessage = "Years of experience is required")]
         [Range(0, 60, ErrorMessage = "Experience must be between 0 and 60 years")]
