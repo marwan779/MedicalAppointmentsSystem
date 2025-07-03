@@ -1,0 +1,203 @@
+﻿@using MedicalAppointmentsSystem.Models.ViewModels.Clinic
+@model EditClinicVM
+@{
+    ViewData["Title"] = "Edit Clinic";
+    Layout = "_Layout";
+}
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg">
+                <div class="card-header" style="background-color: var(--medical-primary);">
+                    <h1 class="text-center text-white"><i class="fas fa-edit me-2"></i>@ViewData["Title"]</h1>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data" asp-action="EditClinic">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="Id" />
+                        <input type="hidden" asp-for="ImagePath" />
+
+                        @if (TempData["Error"] != null)
+                        {
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                @TempData["Error"]
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        }
+
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Name" class="form-label">Clinic Name</label>
+                                    <input asp-for="Name" class="form-control" placeholder="Enter clinic name" />
+                                    <span asp-validation-for="Name" class="text-danger small"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="Location" class="form-label">Clinic Location</label>
+                                    <input asp-for="Location" class="form-control" id="locationInput" placeholder="Click on the map to update location" />
+                                    <span asp-validation-for="Location" class="text-danger small"></span>
+                                </div>
+
+                                <!-- 🗺️ Map container -->
+                                <div id="map" style="height: 250px; border-radius: 10px;"></div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="PhoneNumber" class="form-label">Phone Number</label>
+                                    <input asp-for="PhoneNumber" class="form-control" placeholder="Enter contact number" />
+                                    <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="OpensAt" class="form-label">Opening Time</label>
+                                    <input asp-for="OpensAt" type="time" class="form-control"
+                                           value="@Model.OpensAt.ToString(@"hh\:mm")" />
+                                    <span asp-validation-for="OpensAt" class="text-danger small"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="ClosesAt" class="form-label">Closing Time</label>
+                                    <input asp-for="ClosesAt" type="time" class="form-control"
+                                           value="@Model.ClosesAt.ToString(@"hh\:mm")" />
+                                    <span asp-validation-for="ClosesAt" class="text-danger small"></span>
+                                </div>
+
+                                <!-- Working Days Section -->
+                                <div class="mb-3">
+                                    <label class="form-label">Working Days</label>
+                                    <div class="border rounded p-3" style="background-color: #f8f9fa;">
+                                        <div class="d-flex flex-wrap gap-3">
+                                            @{
+                                                var daysOfWeek = Enum.GetNames(typeof(DayOfWeek));
+                                                foreach (var day in daysOfWeek)
+                                                {
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input working-day-checkbox"
+                                                               type="checkbox"
+                                                               name="WorkingDaysList"
+                                                               value="@day"
+                                                               id="day-@day"
+                                                        @(Model.WorkingDaysList != null && Model.WorkingDaysList.Contains(day) ? "checked" : "") />
+                                                        <label class="form-check-label working-day-label" for="day-@day">
+                                                            <span class="day-full">@day</span>
+                                                        </label>
+                                                    </div>
+                                                }
+                                            }
+                                        </div>
+                                        <small class="text-muted mt-2 d-block">
+                                            <i class="fas fa-info-circle me-1"></i> Select all days the clinic is open
+                                        </small>
+                                        <span asp-validation-for="WorkingDaysList" class="text-danger small d-block mt-2"></span>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Current Clinic Photo</label>
+                                    <div class="border p-2 rounded text-center">
+                                        <img src="@Model.ImagePath" class="img-fluid rounded" style="max-height: 150px;" alt="Current Clinic Photo" />
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="Image" class="form-label">Update Photo</label>
+                                    <input asp-for="Image" class="form-control" type="file" accept=".jpg,.jpeg,.png" />
+                                    <small class="text-muted">Leave blank to keep current photo</small>
+                                    <span asp-validation-for="Image" class="text-danger small d-block"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <a asp-action="Index" class="btn btn-outline-secondary me-md-2">
+                                <i class="fas fa-arrow-left me-1"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true
+        });
+
+        @if (TempData["Success"] != null)
+        {
+            <text>
+                        Toast.fire({
+                            icon: 'success',
+                            title: '@TempData["Success"]'
+                        });
+            </text>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+            <text>
+                        Toast.fire({
+                            icon: 'error',
+                            title: '@TempData["Error"]'
+                        });
+            </text>
+        }
+
+        // Initialize map with current location
+        document.addEventListener("DOMContentLoaded", function () {
+            var currentLocation = '@Model.Location'.split(',');
+            var lat = currentLocation[0] || 30.0444;
+            var lng = currentLocation[1] || 31.2357;
+
+            var map = L.map('map').setView([lat, lng], 13);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map);
+
+            // Add marker for current location
+            var marker = L.marker([lat, lng]).addTo(map);
+
+            map.on('click', function (e) {
+                var newLat = e.latlng.lat.toFixed(6);
+                var newLng = e.latlng.lng.toFixed(6);
+                var coordinates = `${newLat},${newLng}`;
+
+                marker.setLatLng(e.latlng);
+                document.getElementById('locationInput').value = coordinates;
+            });
+        });
+
+        // Client-side validation for file type
+        document.querySelector('input[type="file"]').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+                if (!validTypes.includes(file.type)) {
+                    document.querySelector('[data-valmsg-for="Image"]').textContent =
+                        'Invalid file type. Only JPG, JPEG, and PNG files are allowed.';
+                    e.target.value = '';
+                }
+            }
+        });
+    </script>
+}

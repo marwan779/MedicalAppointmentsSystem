@@ -13,5 +13,6 @@ namespace MedicalAppointmentsSystem.Data
 
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
         public DbSet<DoctorInformation> DoctorInformation { get; set; }
+        public DbSet<Clinic> Clinics { get; set; }
     }
 }

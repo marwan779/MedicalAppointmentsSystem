@@ -8,7 +8,7 @@ namespace MedicalAppointmentsSystem.Services.ImageService
         {
             _webHostEnvironment = webHostEnvironment;
         }
-        public string SaveImage(IFormFile image, string folderPath, string userId)
+        public string SaveImage(IFormFile image, string folderPath, string imageRootPath)
         {
             //Get WWWRootPath
             string rootPath = _webHostEnvironment.WebRootPath;
@@ -31,10 +31,10 @@ namespace MedicalAppointmentsSystem.Services.ImageService
 
 
             
-            return @"\Images\Doctors\" + userId + "\\" + imageName;
+            return imageRootPath + imageName;
         }
 
-        public string UpdateImage(IFormFile newImage, string oldImagePath, string folderPath, string userId)
+        public string UpdateImage(IFormFile newImage, string oldImagePath, string folderPath, string imageRootPath)
         {
             List<string> allowedExtensions = new List<string>() { ".jpg", ".jpeg", ".png" };
             var imageExtension = Path.GetExtension(newImage.FileName);
@@ -59,7 +59,7 @@ namespace MedicalAppointmentsSystem.Services.ImageService
             }
 
 
-            return @"\Images\Doctors\" + userId + "\\" + newImageName;
+            return  imageRootPath + newImageName;
         }
     }
 }

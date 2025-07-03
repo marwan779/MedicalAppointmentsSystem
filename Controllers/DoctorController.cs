@@ -114,15 +114,15 @@ namespace MedicalAppointmentsSystem.Areas.Doctor.Controllers
             Directory.CreateDirectory(folderPath);
 
 
-            doctorInformation.IdProofPath = _imageService.SaveImage(addDoctorInformationVM.IdProof, folderPath, UserId);
-            doctorInformation.PhotoPath = _imageService.SaveImage(addDoctorInformationVM.Photo, folderPath, UserId);
-            doctorInformation.LicenseImagePath = _imageService.SaveImage(addDoctorInformationVM.LicenseImage, folderPath, UserId);
+            doctorInformation.IdProofPath = _imageService.SaveImage(addDoctorInformationVM.IdProof, folderPath, @"\Images\Doctors\" + UserId + "\\");
+            doctorInformation.PhotoPath = _imageService.SaveImage(addDoctorInformationVM.Photo, folderPath, @"\Images\Doctors\" + UserId + "\\");
+            doctorInformation.LicenseImagePath = _imageService.SaveImage(addDoctorInformationVM.LicenseImage, folderPath, @"\Images\Doctors\" + UserId + "\\");
 
             if (String.IsNullOrEmpty(doctorInformation.LicenseImagePath) ||
                 String.IsNullOrEmpty(doctorInformation.PhotoPath) ||
                 String.IsNullOrEmpty(doctorInformation.IdProofPath))
             {
-                TempData["Error"] = "Invalid file type. Only .jpg, .jpeg, and .png files are allowed.";
+                TempData["Error"] = "Invalid image type. Only .jpg, .jpeg, and .png files are allowed.";
                 return RedirectToAction(nameof(AddDoctorInformation));
             }
 
@@ -206,19 +206,19 @@ namespace MedicalAppointmentsSystem.Areas.Doctor.Controllers
             string folderPath = Path.Combine(_webHostEnvironment.WebRootPath, "Images", "Doctors", UserId);
 
             if (editDoctorInformationVM.IdProof != null)
-                doctorInformation.IdProofPath = _imageService.UpdateImage(editDoctorInformationVM.IdProof, editDoctorInformationVM.IdProofPath, folderPath, UserId);
+                doctorInformation.IdProofPath = _imageService.UpdateImage(editDoctorInformationVM.IdProof, editDoctorInformationVM.IdProofPath, folderPath, @"\Images\Doctors\" + UserId + "\\");
 
             if (editDoctorInformationVM.Photo != null)
-                doctorInformation.PhotoPath = _imageService.UpdateImage(editDoctorInformationVM.Photo, editDoctorInformationVM.PhotoPath, folderPath, UserId);
+                doctorInformation.PhotoPath = _imageService.UpdateImage(editDoctorInformationVM.Photo, editDoctorInformationVM.PhotoPath, folderPath, @"\Images\Doctors\" + UserId + "\\");
 
             if (editDoctorInformationVM.LicenseImage != null)
-                doctorInformation.LicenseImagePath = _imageService.UpdateImage(editDoctorInformationVM.LicenseImage, editDoctorInformationVM.LicenseImagePath, folderPath, UserId);
+                doctorInformation.LicenseImagePath = _imageService.UpdateImage(editDoctorInformationVM.LicenseImage, editDoctorInformationVM.LicenseImagePath, folderPath, @"\Images\Doctors\" + UserId + "\\");
 
             if (String.IsNullOrEmpty(doctorInformation.LicenseImagePath) ||
                 String.IsNullOrEmpty(doctorInformation.PhotoPath) ||
                 String.IsNullOrEmpty(doctorInformation.IdProofPath))
             {
-                TempData["Error"] = "Invalid file type. Only .jpg, .jpeg, and .png files are allowed.";
+                TempData["Error"] = "Invalid image type. Only .jpg, .jpeg, and .png files are allowed.";
                 return RedirectToAction(nameof(EditDoctorInformation));
             }
 

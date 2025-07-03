@@ -1,0 +1,200 @@
+﻿@using MedicalAppointmentsSystem.Models.ViewModels.Clinic
+@model List<ClinicVM>
+@{
+    ViewData["Title"] = "My Clinics";
+    Layout = "_Layout";
+}
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="text-primary"><i class="fas fa-clinic-medical me-2"></i>@ViewData["Title"]</h1>
+        <a asp-action="AddClinic" asp-controller="Clinic" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Add New Clinic
+        </a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (Model.Any())
+    {
+        <div class="row">
+            @foreach (var clinic in Model)
+            {
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow-sm clinic-card">
+                        <div class="row g-0">
+                            <div class="col-md-4">
+                                @if (!string.IsNullOrEmpty(clinic.ImagePath))
+                                {
+                                    <img src="@clinic.ImagePath" class="img-fluid rounded-start h-100 clinic-image" alt="Clinic Image">
+                                }
+                                else
+                                {
+                                    <div class="d-flex align-items-center justify-content-center h-100 bg-light">
+                                        <i class="fas fa-clinic-medical fa-4x text-secondary"></i>
+                                    </div>
+                                }
+                            </div>
+                            <div class="col-md-8">
+                                <div class="card-body h-100 d-flex flex-column">
+                                    <h4 class="card-title text-primary mb-3">@clinic.Name</h4>
+                                    <h5 class="card-subtitle mb-3 text-muted">
+                                        <i class="fas fa-map-marker-alt me-1 text-secondary"></i>
+                                        <a href="https://www.google.com/maps?q=@clinic.Location" target="_blank" class="text-decoration-none">
+                                            View Location
+                                        </a>
+                                    </h5>
+                                    <div class="card-text">
+                                        <p class="mb-3">
+                                            <i class="fas fa-phone me-2 text-secondary"></i>
+                                            @clinic.PhoneNumber
+                                        </p>
+                                        <p class="mb-3">
+                                            <i class="fas fa-clock me-2 text-secondary"></i>
+                                            @TimeOnly.FromTimeSpan(clinic.OpensAt).ToString("hh:mm tt") -
+                                            @TimeOnly.FromTimeSpan(clinic.ClosesAt).ToString("hh:mm tt")
+                                        </p>
+
+                                        <div class="d-flex align-items-center mb-2">
+                                            <i class="fas fa-calendar-alt me-2 text-secondary"></i>
+                                            <span class="fw-semibold text-muted">Working Days</span>
+                                        </div>
+                                        <div class="d-flex flex-wrap gap-2 mb-3">
+
+                                            @if (clinic.WorkingDaysList != null && clinic.WorkingDaysList.Any())
+                                            {
+                                                foreach (var day in clinic.WorkingDaysList)
+                                                {
+                                                    <span class="working-day-pill">
+                                                        <i class="fas fa-check-circle me-1"></i>
+                                                        @day
+                                                    </span>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted small">No working days specified</span>
+                                            }
+                                        </div>
+
+
+                                    </div>
+
+                                    <div class="mt-auto d-flex justify-content-end gap-2">
+                                        <a asp-action="EditClinic" asp-controller="Clinic" asp-route-id="@clinic.Id"
+                                           class="btn btn-outline-primary btn-sm">
+                                            <i class="fas fa-edit me-1"></i> Update
+                                        </a>
+                                        <a asp-action="ManageAppointments" asp-controller="Clinic" asp-route-clinicId="@clinic.Id"
+                                           class="btn btn-primary btn-sm">
+                                            <i class="fas fa-calendar-check me-1"></i> Manage Appointments
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning">
+            <h4 class="alert-heading"><i class="fas fa-exclamation-circle me-2"></i>No Clinics Found</h4>
+            <p>You haven't added any clinics yet. Click the "Add New Clinic" button to get started.</p>
+        </div>
+    }
+</div>
+
+<style>
+    .clinic-card {
+        border-radius: 10px;
+        border-left: 4px solid var(--medical-primary);
+        height: 100%;
+    }
+
+    .clinic-image {
+        object-fit: cover;
+        border-top-left-radius: 10px;
+        border-bottom-left-radius: 10px;
+    }
+
+    .card-body {
+        padding: 1.25rem;
+    }
+
+    .working-days-container {
+        background-color: #f8f9fa;
+        padding: 1rem;
+        border-radius: 8px;
+        /* Removed the border-left property */
+    }
+
+    .working-day-pill {
+        display: inline-flex;
+        align-items: center;
+        background-color: white;
+        color: var(--medical-primary);
+        padding: 0.35rem 0.75rem;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border: 1px solid rgba(16, 202, 183, 0.2);
+    }
+
+        .working-day-pill i {
+            font-size: 0.7rem;
+            color: #28a745;
+        }
+</style>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end', // top-right
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true
+        });
+
+        @if (TempData["Success"] != null)
+        {
+            <text>
+                    Toast.fire({
+                        icon: 'success',
+                        title: '@TempData["Success"]'
+                    });
+            </text>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+            <text>
+                    Toast.fire({
+                        icon: 'error',
+                        title: '@TempData["Error"]'
+                    });
+            </text>
+        }
+
+        @if (TempData["Warning"] != null)
+        {
+            <text>
+                    Toast.fire({
+                        icon: 'warning',
+                        title: '@TempData["Warning"]'
+                    });
+            </text>
+        }
+    </script>
+}
