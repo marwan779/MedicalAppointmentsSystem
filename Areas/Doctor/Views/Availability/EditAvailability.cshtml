@@ -1,0 +1,125 @@
+﻿@using MedicalAppointmentsSystem.Areas.Doctor.Models.ViewModels.Appointments
+@model EditDoctorAvailabilityVM
+@{
+    ViewData["Title"] = "Edit Availability";
+    Layout = "_Layout";
+    var workingDays = ViewBag.WorkingDays as List<string> ?? new List<string>();
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg">
+                <div class="card-header" style="background-color: var(--medical-primary);">
+                    <h1 class="text-center text-white"><i class="fas fa-calendar-edit me-2"></i>@ViewData["Title"]</h1>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info mb-4">
+                        <h5 class="alert-heading"><i class="fas fa-info-circle me-2"></i>Instructions</h5>
+                        <p>Update your available time slot. Make sure the times are accurate to help patients book appointments efficiently.</p>
+                    </div>
+
+                    <form method="post" asp-action="EditAvailability" asp-route-clinicId="@Model.ClinicId" asp-route-availabilityId="@ViewBag.AvailabilityId">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="Id" />
+
+                        <input type="hidden" asp-for="ClinicId" />
+
+                        @if (TempData["Error"] != null)
+                        {
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                @TempData["Error"]
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        }
+
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Day" class="form-label">Day</label>
+                                    <select asp-for="Day" class="form-select">
+                                        <option value="">Select a day</option>
+                                        @foreach (var day in workingDays)
+                                        {
+                                            <option value="@day">@day</option>
+                                        }
+                                    </select>
+                                    <span asp-validation-for="Day" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="StartTime" class="form-label">Start Time</label>
+                                    <input asp-for="StartTime" type="time" class="form-control"
+                                           value="@Model.StartTime.ToString(@"hh\:mm")" />
+                                    <span asp-validation-for="StartTime" class="text-danger small"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="EndTime" class="form-label">End Time</label>
+                                    <input asp-for="EndTime" type="time" class="form-control"
+                                           value="@Model.EndTime.ToString(@"hh\:mm")" />
+                                    <span asp-validation-for="EndTime" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <a asp-action="Index" asp-route-clinicId="@Model.ClinicId"
+                               class="btn btn-outline-secondary me-md-2">
+                                <i class="fas fa-arrow-left me-1"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary" asp-route-clinicId="@Model.ClinicId">
+                                <i class="fas fa-save me-1"></i> Update Availability
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true
+        });
+
+        @if (TempData["Success"] != null)
+        {
+            <text>
+                        Toast.fire({
+                            icon: 'success',
+                            title: '@TempData["Success"]'
+                        });
+            </text>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+            <text>
+                        Toast.fire({
+                            icon: 'error',
+                            title: '@TempData["Error"]'
+                        });
+            </text>
+        }
+
+        // Set the selected day in dropdown
+        document.addEventListener('DOMContentLoaded', function() {
+            const daySelect = document.getElementById('Day');
+            if (daySelect) {
+                daySelect.value = '@Model.Day';
+            }
+        });
+    </script>
+}

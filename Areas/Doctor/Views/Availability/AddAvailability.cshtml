@@ -1,7 +1,7 @@
 ﻿@using MedicalAppointmentsSystem.Models.ViewModels.Appointments
-@model AddAppointmentVM
+@model AddDoctorAvailabilityVM
 @{
-    ViewData["Title"] = "Add New Appointment";
+    ViewData["Title"] = "Set Your Availability";
     Layout = "_Layout";
     var workingDays = ViewBag.WorkingDays as List<string> ?? new List<string>();
 }
@@ -14,7 +14,14 @@
                     <h1 class="text-center text-white"><i class="fas fa-calendar-plus me-2"></i>@ViewData["Title"]</h1>
                 </div>
                 <div class="card-body">
-                    <form method="post" asp-action="AddAppointment" asp-route-clinicId="@ViewBag.ClinicId">
+                    <div class="alert alert-info mb-4">
+                        <h5 class="alert-heading"><i class="fas fa-info-circle me-2"></i>Instructions</h5>
+                        <p class="mb-1">Please enter the time intervals during which you will be available to receive appointments at this clinic.</p>
+                        <p class="mb-0">You may add multiple time slots (e.g., 9:00 AM – 12:00 PM, 4:00 PM – 6:00 PM).</p>
+                        <p class="mb-0"><strong>Make sure the times are accurate</strong> to help patients book appointments efficiently.</p>
+                    </div>
+
+                    <form method="post" asp-action="AddAvailability" asp-route-clinicId="@ViewBag.ClinicId">
                         @Html.AntiForgeryToken()
                         <input type="hidden" asp-for="ClinicId" value="@ViewBag.ClinicId" />
 
@@ -64,7 +71,7 @@
                                 <i class="fas fa-arrow-left me-1"></i> Cancel
                             </a>
                             <button type="submit" class="btn btn-primary" asp-route-clinicId="@ViewBag.ClinicId">
-                                <i class="fas fa-save me-1"></i> Add Appointment
+                                <i class="fas fa-save me-1"></i> Add Time Slot
                             </button>
                         </div>
                     </form>

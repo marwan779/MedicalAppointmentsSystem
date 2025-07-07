@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace MedicalAppointmentsSystem.Models.ViewModels.Appointments
 {
-    public class AddAppointmentVM
+    public class AddDoctorAvailabilityVM
     {
         [ValidateNever]
         public int ClinicId { get; set; }

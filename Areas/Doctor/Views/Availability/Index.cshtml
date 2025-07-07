@@ -1,6 +1,6 @@
 ﻿@using MedicalAppointmentsSystem.Models
 @using MedicalAppointmentsSystem.Models.ViewModels.Appointments
-@model List<AppointmentVM>
+@model List<DoctorAvailabilityVM>
 @{
     ViewData["Title"] = "Doctor Availability";
     Layout = "_Layout";
@@ -9,9 +9,9 @@
 <div class="container mt-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="text-primary"><i class="fas fa-calendar-alt me-2"></i>@ViewData["Title"]</h1>
-        <a  asp-area="Doctor" asp-controller="Appointments" asp-action="AddAppointment" asp-route-clinicId="@ViewBag.ClinicId"
+        <a asp-area="Doctor" asp-controller="Availability" asp-action="AddAvailability" asp-route-clinicId="@ViewBag.ClinicId"
            class="btn btn-primary">
-            <i class="fas fa-plus me-2"></i>Add Appointment
+            <i class="fas fa-plus me-2"></i>Add Availability
         </a>
     </div>
 
@@ -42,7 +42,6 @@
                                 <th><i class="fas fa-calendar-day me-1"></i> Day</th>
                                 <th><i class="fas fa-clock me-1"></i> Start Time</th>
                                 <th><i class="fas fa-clock me-1"></i> End Time</th>
-                                <th><i class="fas fa-bookmark me-1"></i> Status</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -51,14 +50,32 @@
                             {
                                 <tr>
                                     <td>@appointment.Day</td>
-                                    <td>@appointment.StartTime</td>
-                                    <td>@appointment.EndTime</td>
+                                    <td>@DateTime.Today.Add(appointment.StartTime).ToString("h:mm tt")</td>
+                                    <td>@DateTime.Today.Add(appointment.EndTime).ToString("h:mm tt")</td>
                                     <td>
+                                       <div class="d-flex gap-2">
+                                            <a asp-action="EditAvailability" asp-controller="Availability" 
+                                            asp-route-availabilityId="@appointment.Id"
+                                            asp-route-clinicId="@ViewBag.ClinicId"
+
+                                               class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+
+                                            <a href="#" onclick="confirmDelete('@appointment.Id', '@ViewBag.ClinicId')"
+                                               class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+
+                                       </div>
+
+                                    </td>
+                                   @*  <td>
                                         <span class="badge @(appointment.IsBooked ? "bg-danger" : "bg-success")">
                                             @(appointment.IsBooked ? "Booked" : "Available")
                                         </span>
-                                    </td>
-                                    <td>
+                                    </td> *@
+                                    @* <td>
                                         <div class="d-flex gap-2">
                                             @if (!appointment.IsBooked)
                                             {
@@ -79,7 +96,7 @@
                                                 <span class="text-muted small">No actions available</span>
                                             }
                                         </div>
-                                    </td>
+                                    </td> *@
                                 </tr>
                             }
                         </tbody>
@@ -91,8 +108,8 @@
     else
     {
         <div class="alert alert-warning">
-            <h4 class="alert-heading"><i class="fas fa-exclamation-circle me-2"></i>No Appointments Found</h4>
-            <p>This clinic doesn't have any appointments scheduled yet.</p>
+            <h4 class="alert-heading"><i class="fas fa-exclamation-circle me-2"></i>No Availability Intervals Found</h4>
+            <p>This clinic doesn't have any availability intervals set yet.</p>
         </div>
     }
 </div>
@@ -127,5 +144,24 @@
                         });
             </text>
         }
+
+
+
+                function confirmDelete(availabilityId, clinicId) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = `/Doctor/Availability/DeleteAvailability?availabilityId=${availabilityId}&clinicId=${clinicId}`;
+                }
+            });
+        }
+
     </script>
 }
