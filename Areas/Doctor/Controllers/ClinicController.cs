@@ -8,9 +8,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 
-namespace MedicalAppointmentsSystem.Controllers
+namespace MedicalAppointmentsSystem.Areas.Controllers
 {
     [Authorize(Roles = StaticDetails.DoctorRole)]
+    [Area("Doctor")]
     public class ClinicController : Controller
     {
         private readonly ApplicationDbContext _context;

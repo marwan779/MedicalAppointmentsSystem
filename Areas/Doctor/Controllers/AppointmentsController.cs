@@ -5,8 +5,9 @@ using MedicalAppointmentsSystem.Models.ViewModels.Appointments;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace MedicalAppointmentsSystem.Controllers
+namespace MedicalAppointmentsSystem.Areas.Controllers
 {
+    [Area("Doctor")]
     [Authorize(Roles = StaticDetails.DoctorRole)]
     public class AppointmentsController : Controller
     {

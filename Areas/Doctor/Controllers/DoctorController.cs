@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 namespace MedicalAppointmentsSystem.Areas.Doctor.Controllers
 {
     [Authorize(Roles = StaticDetails.DoctorRole)]
+    [Area("Doctor")]
+
     public class DoctorController : Controller
     {
         private readonly ApplicationDbContext _context;
