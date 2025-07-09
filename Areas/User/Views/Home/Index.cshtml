@@ -1,0 +1,213 @@
+﻿@using MedicalAppointmentsSystem.Areas.User.Models.ViewModels
+@using MedicalAppointmentsSystem.Models.ViewModels.Clinic
+@model List<UserClinicVM>
+@{
+    ViewData["Title"] = "Clinics";
+    Layout = "_Layout";
+
+    int pageSize = ViewBag.PageSize;
+    int pageNumber = ViewBag.PageNumber ?? 1;
+    int totalClinics = ViewBag.TotalClinics ?? 0;
+    int totalPages = (int)Math.Ceiling((double)totalClinics / pageSize);
+}
+
+<div class="container mt-5">
+    <h1 class="text-primary mb-4"><i class="fas fa-clinic-medical me-2"></i>@ViewData["Title"]</h1>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+
+    <div class="row mb-3">
+        <div class="col-md-3">
+            <label for="pageSizeSelect" class="form-label">Items per page:</label>
+            <select id="pageSizeSelect" class="form-select" onchange="changePageSize(this)">
+                <option value="2" selected="@(pageSize == 2)">2</option>
+                <option value="4" selected="@(pageSize == 4)">4</option>
+                <option value="6" selected="@(pageSize == 6)">6</option>
+                <option value="8" selected="@(pageSize == 8)">8</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="row">
+        @if (Model.Any())
+        {
+            @foreach (var clinic in Model)
+            {
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow-sm clinic-card h-100">
+                        <div class="row g-0 h-100">
+                            <div class="col-md-4">
+                                @if (!string.IsNullOrEmpty(clinic.ImagePath))
+                                {
+                                    <img src="@clinic.ImagePath" class="img-fluid rounded-start h-100 w-100" style="object-fit: cover;" alt="Clinic Image">
+                                }
+                                else
+                                {
+                                    <div class="d-flex align-items-center justify-content-center h-100 bg-light">
+                                        <i class="fas fa-clinic-medical fa-4x text-secondary"></i>
+                                    </div>
+                                }
+                            </div>
+                            <div class="col-md-8">
+                                <div class="card-body d-flex flex-column h-100">
+                                    <h4 class="card-title text-primary">@clinic.Name</h4>
+                                    <div class="mb-2">
+                                        <i class="fas fa-user-md me-2 text-secondary"></i>
+                                        <span>Dr. @clinic.DoctorName</span>
+                                    </div>
+                                    <div class="mb-2">
+                                        <i class="fas fa-star-of-life me-2 text-secondary"></i>
+                                        <span>@clinic.DoctorSpecialization</span>
+                                    </div>
+                                    <div class="mb-2">
+                                        <i class="fas fa-map-marker-alt me-2 text-secondary"></i>
+                                        <a href="https://www.google.com/maps?q=@clinic.Location" target="_blank" class="text-decoration-none">
+                                            View Location
+                                        </a>
+                                    </div>
+                                    <div class="mb-2">
+                                        <i class="fas fa-phone me-2 text-secondary"></i>
+                                        <span>@clinic.PhoneNumber</span>
+                                    </div>
+                                    <div class="mb-2">
+                                        <i class="fas fa-clock me-2 text-secondary"></i>
+                                        <span>@TimeOnly.FromTimeSpan(clinic.OpensAt).ToString("hh:mm tt") - @TimeOnly.FromTimeSpan(clinic.ClosesAt).ToString("hh:mm tt")</span>
+                                    </div>
+                                    <div class="mt-auto">
+                                        <div class="d-flex flex-wrap gap-1 mb-2">
+                                            @foreach (var day in clinic.WorkingDaysList)
+                                            {
+                                                <span class="badge bg-light text-dark border">@day</span>
+                                            }
+                                        </div>
+                                        <div class="d-flex gap-2 mt-2">
+                                            <a asp-area="User" asp-controller = "Home" asp-action="DoctorProfile" asp-route-doctorId="@clinic.DoctorId" class="btn btn-sm btn-primary rounded-pill px-3">
+                                                <i class="fas fa-user-md me-1"></i> Doctor Profile
+                                            </a>
+                                            
+                                            <a asp-area="User" asp-controller="UserAppointments" asp-action="BooKAppointment" asp-route-id="@clinic.Id" class="btn btn-sm btn-primary rounded-pill px-3">
+                                                <i class="fas fa-calendar-check me-1"></i> Book Appointment
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <!-- Pagination -->
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center mt-4">
+                    <li class="page-item @(pageNumber == 1 ? "disabled" : "")">
+                        <a class="page-link"
+                           href="@Url.Action("Index", new { pageNumber = pageNumber - 1, pageSize = pageSize })">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+
+                    @for (int i = 1; i <= totalPages; i++)
+                    {
+                        <li class="page-item @(i == pageNumber ? "active" : "")">
+                            <a class="page-link"
+                               href="@Url.Action("Index", "Home", new { area = "User", pageNumber = i, pageSize = pageSize })">@i</a>
+                        </li>
+                    }
+
+                    <li class="page-item @(pageNumber == totalPages ? "disabled" : "")">
+                        <a class="page-link"
+                           href="@Url.Action("Index", new { pageNumber = pageNumber + 1, pageSize = pageSize })">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        }
+        else
+        {
+            <div class="alert alert-warning">
+                <h4 class="alert-heading"><i class="fas fa-exclamation-circle me-2"></i>No Clinics Found</h4>
+                <p>There are currently no clinics available.</p>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .clinic-card {
+        border-radius: 10px;
+        border-left: 4px solid var(--medical-primary);
+        transition: transform 0.3s ease;
+    }
+
+    .clinic-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+
+    .page-item.active .page-link {
+        background-color: var(--medical-primary);
+        border-color: var(--medical-primary);
+    }
+
+    .page-link {
+        color: var(--medical-primary);
+    }
+</style>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true
+        });
+
+        @if (TempData["Success"] != null)
+        {
+            <text>
+                    Toast.fire({
+                        icon: 'success',
+                        title: '@TempData["Success"]'
+                    });
+            </text>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+            <text>
+                    Toast.fire({
+                        icon: 'error',
+                        title: '@TempData["Error"]'
+                    });
+            </text>
+        }
+    </script>
+
+
+    <script>
+        function changePageSize(select) {
+            const pageSize = select.value;
+            window.location.href = `@Url.Action("Index")?pageNumber=1&pageSize=${pageSize}`;
+        }
+    </script>
+}

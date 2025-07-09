@@ -6,6 +6,8 @@
         {
             [Key]
             public int Id { get; set; }
+            [Required] 
+            public string DoctorName { get; set; } = string.Empty;
             [Required]
             public string UserId { get; set; } = string.Empty;
             public ApplicationUser User { get; set; }

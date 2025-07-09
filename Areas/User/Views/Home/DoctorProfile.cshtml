@@ -1,0 +1,126 @@
+﻿@using MedicalAppointmentsSystem.Areas.User.Models.ViewModels
+@model UserDoctorProfileVM
+@{
+    ViewData["Title"] = "Doctor Profile";
+    Layout = "_Layout";
+}
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body text-center">
+                    @if (!string.IsNullOrEmpty(Model.PhotoPath))
+                    {
+                        <img src="@Model.PhotoPath" class="rounded-circle mb-3" width="200" height="200" style="object-fit: cover;" alt="Doctor Photo">
+                    }
+                    else
+                    {
+                        <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mb-3" style="width: 200px; height: 200px; margin: 0 auto;">
+                            <i class="fas fa-user-md fa-4x text-secondary"></i>
+                        </div>
+                    }
+                    <h3 class="card-title text-primary">Dr. @Model.DoctorName</h3>
+                    <h5 class="text-muted">@Model.Specialization</h5>
+
+                    <div class="d-flex justify-content-center mt-3">
+                        <a href="#" class="btn btn-primary btn-sm rounded-pill px-3 me-2">
+                            <i class="fas fa-calendar-check me-1"></i> Book Appointment
+                        </a>
+                        <a href="tel:@Model.EmergencyPhone" class="btn btn-outline-danger btn-sm rounded-pill px-3">
+                            <i class="fas fa-phone-alt me-1"></i> Emergency
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">License Information</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-1"><strong>License #:</strong> @Model.LicenseNumber</p>
+                    @if (!string.IsNullOrEmpty(Model.LicenseImagePath))
+                    {
+                        <a href="@Model.LicenseImagePath" target="_blank" class="btn btn-sm btn-outline-primary mt-2">
+                            <i class="fas fa-external-link-alt me-1"></i> View License
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Professional Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p>
+                                <strong><i class="fas fa-graduation-cap text-primary me-2"></i>Medical School:</strong><br>
+                                @Model.MedicalSchool (@Model.GraduationYear)
+                            </p>
+
+                            <p>
+                                <strong><i class="fas fa-briefcase-medical text-primary me-2"></i>Experience:</strong><br>
+                                @Model.YearsExperience years
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <p>
+                                <strong><i class="fas fa-hospital text-primary me-2"></i>Hospital Affiliation:</strong><br>
+                                @Model.HospitalAffiliation
+                            </p>
+
+                            <p>
+                                <strong><i class="fas fa-clinic-medical text-primary me-2"></i>Department:</strong><br>
+                                @Model.Department
+                            </p>
+                        </div>
+                    </div>
+                    <p>
+                        <strong><i class="fas fa-user-tie text-primary me-2"></i>Position:</strong><br>
+                        @Model.Position
+                    </p>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">About Dr. @Model.DoctorName.Split(' ')[0]</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">@Model.Bio</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 10px;
+        border: none;
+        transition: transform 0.3s ease;
+    }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+    .card-header {
+        border-radius: 10px 10px 0 0 !important;
+    }
+
+    strong {
+        color: #2c3e50;
+    }
+
+    .rounded-circle {
+        border: 5px solid #e9f5ff;
+    }
+</style>
+

@@ -6,6 +6,7 @@ using MedicalAppointmentsSystem.Configurations;
 using MedicalAppointmentsSystem.Services.MailService;
 using MailKit;
 using MedicalAppointmentsSystem.Services.ImageService;
+using Microsoft.AspNetCore.Authentication.Cookies;
 namespace MedicalAppointmentsSystem
 {
     public class Program
@@ -33,6 +34,18 @@ namespace MedicalAppointmentsSystem
 
             builder.Services.AddScoped<IImageService, ImageService>();
 
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            })
+            .AddCookie(options =>
+            {
+                options.LoginPath = "/Identity/Account/Login"; // Or your actual login path
+                options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+            });
+
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -53,12 +66,10 @@ namespace MedicalAppointmentsSystem
             app.MapRazorPages();
 
             app.MapControllerRoute(
-             name: "areas",
-             pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+            name: "default",
+            pattern: "{area=User}/{controller=Home}/{action=Index}/{id?}");
 
-            app.MapControllerRoute(
-                name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+
 
             app.Run();
         }

@@ -52,7 +52,7 @@ namespace MedicalAppointmentsSystem.Areas.Doctor.Controllers
                 IdProofPath = doctorInformation.IdProofPath,
                 PhotoPath = doctorInformation.PhotoPath,
                 RegistrationDate = doctorInformation.RegistrationDate,
-                DoctorName = _context.ApplicationUsers.FirstOrDefault(n => n.Id == UserId).FullName
+                DoctorName = doctorInformation.DoctorName
             };
 
 
@@ -108,6 +108,7 @@ namespace MedicalAppointmentsSystem.Areas.Doctor.Controllers
                 MedicalSchool = addDoctorInformationVM.MedicalSchool,
                 HospitalAffiliation = addDoctorInformationVM.HospitalAffiliation,
                 YearsExperience = addDoctorInformationVM.YearsExperience,
+                DoctorName = _context.ApplicationUsers.FirstOrDefault(d => d.Id == UserId).FullName
             };
 
 
