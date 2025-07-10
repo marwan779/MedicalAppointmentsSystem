@@ -16,12 +16,12 @@ namespace MedicalAppointmentsSystem.Areas.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IWebHostEnvironment _webHostEnvironment;
-        private readonly IImageService _imageService;
-        public ClinicController(ApplicationDbContext context, IWebHostEnvironment environment, IImageService imageService)
+        private readonly IFileService _fileService;
+        public ClinicController(ApplicationDbContext context, IWebHostEnvironment environment, IFileService fileService)
         {
             _context = context;
             _webHostEnvironment = environment;
-            _imageService = imageService;
+            _fileService = fileService;
         }
 
         [HttpGet]
@@ -76,6 +76,15 @@ namespace MedicalAppointmentsSystem.Areas.Controllers
             if (!ModelState.IsValid)
                 return View(addClinicVM);
 
+
+
+
+            if (!StaticDetails.allowedImageExtensions.Contains(Path.GetExtension(addClinicVM.Image.FileName)))
+            {
+                TempData["Error"] = "Invalid image type. Only .jpg, .jpeg, and .png files are allowed.";
+                return View(addClinicVM);
+            }
+
             if (addClinicVM.OpensAt > addClinicVM.ClosesAt)
             {
                 TempData["Error"] = "Invalid Working Times";
@@ -100,12 +109,8 @@ namespace MedicalAppointmentsSystem.Areas.Controllers
 
             Directory.CreateDirectory(folderPath);
 
-            clinic.ImagePath = _imageService.SaveImage(addClinicVM.Image, folderPath, @"\Images\Clinics\" + clinic.Id.ToString() + "\\");
-            if (String.IsNullOrEmpty(clinic.ImagePath))
-            {
-                TempData["Error"] = "Invalid image type. Only .jpg, .jpeg, and .png files are allowed.";
-                return View(addClinicVM);
-            }
+            clinic.ImagePath = _fileService.SaveFile(addClinicVM.Image, folderPath, @"\Images\Clinics\" + clinic.Id.ToString() + "\\");
+           
 
 
             _context.Clinics.Update(clinic);
@@ -172,7 +177,7 @@ namespace MedicalAppointmentsSystem.Areas.Controllers
             if (editClinicVM.Image != null)
             {
                 string folderPath = Path.Combine(_webHostEnvironment.WebRootPath, "Images", "Clinics", clinic.Id.ToString());
-                clinic.ImagePath = _imageService.UpdateImage(editClinicVM.Image, clinic.ImagePath, folderPath, @"\Images\Clinics\" + clinic.Id.ToString() + "\\");
+                clinic.ImagePath = _fileService.UpdateImage(editClinicVM.Image, clinic.ImagePath, folderPath, @"\Images\Clinics\" + clinic.Id.ToString() + "\\");
 
                 if (String.IsNullOrEmpty(clinic.ImagePath))
                 {

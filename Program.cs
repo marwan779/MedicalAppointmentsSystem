@@ -32,7 +32,7 @@ namespace MedicalAppointmentsSystem
             
             builder.Services.AddTransient<IEmailSerivce, EmailSerivce>();
 
-            builder.Services.AddScoped<IImageService, ImageService>();
+            builder.Services.AddScoped <IFileService, FileService>();
 
             builder.Services.AddAuthentication(options =>
             {

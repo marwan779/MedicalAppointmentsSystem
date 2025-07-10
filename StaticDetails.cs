@@ -40,5 +40,6 @@
         public const string AppointmentScheduled = "Appointment Scheduled";
         public const string RequestCanceled = "Appointment Canceled";
 
+        public static List<string> allowedImageExtensions = new List<string> { ".jpg", ".jpeg", ".png" };
     }
 }
