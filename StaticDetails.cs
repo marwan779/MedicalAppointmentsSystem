@@ -36,5 +36,9 @@
         "Rheumatology"
         };
 
+        public const string RequestUnderReview = "Under Review";
+        public const string AppointmentScheduled = "Appointment Scheduled";
+        public const string RequestCanceled = "Appointment Canceled";
+
     }
 }

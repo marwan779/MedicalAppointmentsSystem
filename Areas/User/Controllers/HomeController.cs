@@ -5,6 +5,7 @@ using MedicalAppointmentsSystem.Models;
 using MedicalAppointmentsSystem.Models.ViewModels.Clinic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace MedicalAppointmentsSystem.Areas.User.Controllers
 {
@@ -19,15 +20,26 @@ namespace MedicalAppointmentsSystem.Areas.User.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index(int pageSize = 2, int pageNumber = 1)
+        public IActionResult Index(int pageSize = 2, int pageNumber = 1, string searchTerm = "")
         {
+            IQueryable<Clinic> clinicsQuery = _context.Clinics.Include(a => a.Doctor).AsQueryable();
+
+
+            if (!String.IsNullOrEmpty(searchTerm))
+            {
+                clinicsQuery = clinicsQuery.Where(c => c.Doctor.FullName.Contains(searchTerm)
+                || c.Name.Contains(searchTerm)
+                || _context.DoctorInformation.FirstOrDefault(d => d.UserId == c.DoctorId).Specialization.Contains(searchTerm)).AsQueryable();
+            }
 
             int totalClinics = _context.Clinics.Count();
-            List<Clinic> clinics = _context.Clinics
+            List<Clinic> clinics = clinicsQuery
                 .Skip(pageSize * (pageNumber - 1))
                 .Take(pageSize)
                 .ToList();
 
+
+            
             List<UserClinicVM> userClinicVMs = new List<UserClinicVM>();
 
 

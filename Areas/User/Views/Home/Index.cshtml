@@ -9,6 +9,7 @@
     int pageNumber = ViewBag.PageNumber ?? 1;
     int totalClinics = ViewBag.TotalClinics ?? 0;
     int totalPages = (int)Math.Ceiling((double)totalClinics / pageSize);
+    string searchTerm = ViewBag.SearchTerm ?? "";
 }
 
 <div class="container mt-5">
@@ -30,6 +31,15 @@
         </div>
     }
 
+    @if (!string.IsNullOrEmpty(searchTerm))
+    {
+        <div class="alert alert-info mb-3">
+            Showing results for: <strong>@searchTerm</strong>
+            <a href="@Url.Action("Index", new { pageSize = pageSize })" class="float-end text-decoration-none">
+                <i class="fas fa-times"></i> Clear search
+            </a>
+        </div>
+    }
 
     <div class="row mb-3">
         <div class="col-md-3">
@@ -40,6 +50,24 @@
                 <option value="6" selected="@(pageSize == 6)">6</option>
                 <option value="8" selected="@(pageSize == 8)">8</option>
             </select>
+        </div>
+        <div class="col-md-6">
+            <form method="get" asp-action="Index" class="d-flex">
+                <div class="input-group">
+                    <input type="text" class="form-control" name="searchTerm"
+                           placeholder="Search by clinic, doctor, or specialty"
+                           value="@searchTerm">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    @if (!string.IsNullOrEmpty(searchTerm))
+                    {
+                        <a href="@Url.Action("Index", new { pageSize = pageSize })" class="btn btn-outline-secondary">
+                            Clear
+                        </a>
+                    }
+                </div>
+            </form>
         </div>
     </div>
 
@@ -96,12 +124,12 @@
                                             }
                                         </div>
                                         <div class="d-flex gap-2 mt-2">
-                                            <a asp-area="User" asp-controller = "Home" asp-action="DoctorProfile" asp-route-doctorId="@clinic.DoctorId" class="btn btn-sm btn-primary rounded-pill px-3">
+                                            <a asp-area="User" asp-controller="Home" asp-action="DoctorProfile" asp-route-doctorId="@clinic.DoctorId" class="btn btn-sm btn-primary rounded-pill px-3">
                                                 <i class="fas fa-user-md me-1"></i> Doctor Profile
                                             </a>
-                                            
+
                                             <a asp-area="User" asp-controller="UserAppointments" asp-action="BooKAppointment" asp-route-id="@clinic.Id" class="btn btn-sm btn-primary rounded-pill px-3">
-                                                <i class="fas fa-calendar-check me-1"></i> Book Appointment
+                                                <i class="fas fa-calendar-check me-1"></i> Request Booking An Appointment
                                             </a>
                                         </div>
                                     </div>
@@ -117,7 +145,7 @@
                 <ul class="pagination justify-content-center mt-4">
                     <li class="page-item @(pageNumber == 1 ? "disabled" : "")">
                         <a class="page-link"
-                           href="@Url.Action("Index", new { pageNumber = pageNumber - 1, pageSize = pageSize })">
+                           href="@Url.Action("Index", new { pageNumber = pageNumber - 1, pageSize = pageSize, searchTerm = searchTerm })">
                             <i class="fas fa-chevron-left"></i>
                         </a>
                     </li>
@@ -126,13 +154,13 @@
                     {
                         <li class="page-item @(i == pageNumber ? "active" : "")">
                             <a class="page-link"
-                               href="@Url.Action("Index", "Home", new { area = "User", pageNumber = i, pageSize = pageSize })">@i</a>
+                               href="@Url.Action("Index", new { pageNumber = i, pageSize = pageSize, searchTerm = searchTerm })">@i</a>
                         </li>
                     }
 
                     <li class="page-item @(pageNumber == totalPages ? "disabled" : "")">
                         <a class="page-link"
-                           href="@Url.Action("Index", new { pageNumber = pageNumber + 1, pageSize = pageSize })">
+                           href="@Url.Action("Index", new { pageNumber = pageNumber + 1, pageSize = pageSize, searchTerm = searchTerm })">
                             <i class="fas fa-chevron-right"></i>
                         </a>
                     </li>
@@ -143,7 +171,7 @@
         {
             <div class="alert alert-warning">
                 <h4 class="alert-heading"><i class="fas fa-exclamation-circle me-2"></i>No Clinics Found</h4>
-                <p>There are currently no clinics available.</p>
+                <p>There are currently no clinics matching your search criteria.</p>
             </div>
         }
     </div>
@@ -156,10 +184,10 @@
         transition: transform 0.3s ease;
     }
 
-    .clinic-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-    }
+        .clinic-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
 
     .page-item.active .page-link {
         background-color: var(--medical-primary);
@@ -169,6 +197,28 @@
     .page-link {
         color: var(--medical-primary);
     }
+
+    /* Search box styling */
+    .input-group {
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        border-radius: 20px;
+        overflow: hidden;
+    }
+
+        .input-group input {
+            border-right: none;
+            padding-left: 15px;
+        }
+
+        .input-group button {
+            border-left: none;
+            background-color: var(--medical-primary);
+            color: white;
+        }
+
+            .input-group button:hover {
+                background-color: #0b5ed7;
+            }
 </style>
 
 @section Scripts {
@@ -185,29 +235,27 @@
         @if (TempData["Success"] != null)
         {
             <text>
-                    Toast.fire({
-                        icon: 'success',
-                        title: '@TempData["Success"]'
-                    });
+                        Toast.fire({
+                            icon: 'success',
+                            title: '@TempData["Success"]'
+                        });
             </text>
         }
 
         @if (TempData["Error"] != null)
         {
             <text>
-                    Toast.fire({
-                        icon: 'error',
-                        title: '@TempData["Error"]'
-                    });
+                        Toast.fire({
+                            icon: 'error',
+                            title: '@TempData["Error"]'
+                        });
             </text>
         }
-    </script>
 
-
-    <script>
         function changePageSize(select) {
             const pageSize = select.value;
-            window.location.href = `@Url.Action("Index")?pageNumber=1&pageSize=${pageSize}`;
+            const searchTerm = "@searchTerm";
+            window.location.href = `@Url.Action("Index")?pageNumber=1&pageSize=${pageSize}&searchTerm=${encodeURIComponent(searchTerm)}`;
         }
     </script>
 }
