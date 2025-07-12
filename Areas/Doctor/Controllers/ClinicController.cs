@@ -36,7 +36,7 @@ namespace MedicalAppointmentsSystem.Areas.Controllers
             if (doctorInformation == null)
             {
                 TempData["Warning"] = "Doctor profile needs to be added first";
-                return RedirectToAction("Index", "DoctorController");
+                return RedirectToAction("Index", "Doctor");
             }
 
             List<Clinic> clinics = _context.Clinics.Where(c => c.DoctorId == userId).ToList();

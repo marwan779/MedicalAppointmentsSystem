@@ -23,25 +23,32 @@
 
 					<form asp-action="RequestAnAppointment" method="post" enctype="multipart/form-data">
 						<input type="hidden" asp-for="ClinicId" />
+						<input type="hidden" asp-for="DoctorId" />
 
 						<div class="row mb-4">
 							<div class="col-md-6">
 								<div class="card h-100 border-primary">
 									<div class="card-body">
-										<h5 class="card-title text-primary"><i class="fas fa-info-circle me-2"></i>Appointment Details</h5>
-
-										@* <div class="mb-3">
-											<label asp-for="RequestedAt" class="form-label">Preferred Date</label>
-											<input asp-for="RequestedAt" type="datetime-local" class="form-control"
-												   min="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" />
-											<span asp-validation-for="RequestedAt" class="text-danger"></span>
-										</div> *@
+										<h5 class="card-title text-primary"><i class="fas fa-calendar-alt me-2"></i>Appointment Details</h5>
 
 										<div class="mb-3">
-											<label asp-for="Document" class="form-label">Medical Documents (PDF only)</label>
-											<input asp-for="Document" type="file" class="form-control" accept=".pdf" />
-											<small class="text-muted">Upload any relevant medical reports (max 5MB)</small>
-											<span asp-validation-for="Document" class="text-danger"></span>
+											<label asp-for="PreferredDate" class="form-label">Preferred Date*</label>
+											<input asp-for="PreferredDate" type="date"
+												   class="form-control"
+												   min="@DateTime.Now.ToString("yyyy-MM-dd")"
+												   max="@DateTime.Now.AddMonths(3).ToString("yyyy-MM-dd")" />
+											<span asp-validation-for="PreferredDate" class="text-danger"></span>
+										</div>
+
+										<div class="mb-3">
+											<label asp-for="Document" class="form-label">Medical Documents</label>
+											<div class="input-group">
+												<input asp-for="Document" type="file" class="form-control" accept=".pdf" />
+												<button class="btn btn-outline-secondary" type="button" id="clearFile">
+													<i class="fas fa-times"></i>
+												</button>
+											</div>
+											<small class="text-muted">Upload any relevant medical reports (PDF only, max 5MB)</small>
 										</div>
 									</div>
 								</div>
@@ -50,21 +57,20 @@
 							<div class="col-md-6">
 								<div class="card h-100 border-primary">
 									<div class="card-body">
-										<h5 class="card-title text-primary"><i class="fas fa-user-injured me-2"></i>Medical Information</h5>
+										<h5 class="card-title text-primary"><i class="fas fa-file-medical me-2"></i>Medical Information</h5>
 
 										<div class="mb-3">
-											<label asp-for="ComplainsAbout" class="form-label">Complaints/Reason for Visit*</label>
-											<textarea asp-for="ComplainsAbout" class="form-control" rows="3"
-													  placeholder="Describe your symptoms or reason for appointment"></textarea>
+											<label asp-for="ComplainsAbout" class="form-label">Symptoms/Reason for Visit*</label>
+											<textarea asp-for="ComplainsAbout" class="form-control" rows="4"
+													  placeholder="Please describe your symptoms or reason for the appointment"></textarea>
 											<span asp-validation-for="ComplainsAbout" class="text-danger"></span>
 										</div>
 
 										<div class="mb-3">
-											<label asp-for="ChronicDiseases" class="form-label">Chronic Diseases/Conditions</label>
+											<label asp-for="ChronicDiseases" class="form-label">Existing Medical Conditions</label>
 											<textarea asp-for="ChronicDiseases" class="form-control" rows="2"
-													  placeholder="List any chronic conditions you have"></textarea>
-											<span asp-validation-for="ChronicDiseases" class="text-danger"></span>
-										</div>
+													  placeholder="List any chronic conditions or allergies"></textarea>
+ 										</div>
 									</div>
 								</div>
 							</div>
@@ -74,7 +80,7 @@
 							<a asp-action="Index" class="btn btn-outline-secondary me-md-2">
 								<i class="fas fa-arrow-left me-1"></i> Cancel
 							</a>
-							<button type="submit" class="btn btn-primary">
+							<button type="submit" class="btn btn-primary" asp-route-clinicId="@ViewBag.ClinicId">
 								<i class="fas fa-paper-plane me-1"></i> Submit Request
 							</button>
 						</div>
@@ -84,7 +90,6 @@
 		</div>
 	</div>
 </div>
-
 
 <style>
 	.card {
@@ -114,25 +119,38 @@
 		border-color: var(--medical-primary);
 		box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
 	}
+
+	#clearFile {
+		border-color: #ced4da;
+		border-left: 0;
+	}
 </style>
 
 @section Scripts {
 	<partial name="_ValidationScriptsPartial" />
 	<script>
-		// Set minimum datetime for the appointment (current time + 1 hour)
 		document.addEventListener('DOMContentLoaded', function() {
-			const now = new Date();
-			now.setHours(now.getHours() + 1);
-			const minDateTime = now.toISOString().slice(0, 16);
-			document.getElementById('RequestedAt').min = minDateTime;
+			// Set minimum date (today) and maximum date (3 months from now)
+			const today = new Date().toISOString().split('T')[0];
+			document.getElementById('PreferredDate').min = today;
 
-			// File size validation
+			// File validation
 			document.getElementById('Document').addEventListener('change', function(e) {
 				const file = e.target.files[0];
-				if (file && file.size > 5 * 1024 * 1024) { // 5MB
-					alert('File size exceeds 5MB limit');
-					e.target.value = '';
+				if (file) {
+					if (file.size > 5 * 1024 * 1024) { // 5MB
+						alert('File size exceeds 5MB limit');
+						e.target.value = '';
+					} else if (file.type !== 'application/pdf') {
+						alert('Only PDF files are allowed');
+						e.target.value = '';
+					}
 				}
+			});
+
+			// Clear file input
+			document.getElementById('clearFile').addEventListener('click', function() {
+				document.getElementById('Document').value = '';
 			});
 		});
 	</script>

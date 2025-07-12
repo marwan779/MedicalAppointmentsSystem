@@ -40,19 +40,20 @@ namespace MedicalAppointmentsSystem.Areas.User.Controllers
 
             if (requests.Any())
             {
-                foreach(var request in requests)
+                foreach (var request in requests)
                 {
+                    Clinic clinic = _context.Clinics.FirstOrDefault(c => c.Id == request.ClinicId);
                     requestVMs.Add
                         (
                             new UserAppointmentRequestVM()
                             {
                                 Id = request.Id,
-                                ClinicName = _context.Clinics.FirstOrDefault(c => c.Id == request.ClinicId).Name,
-                                DoctorName = _context.ApplicationUsers.FirstOrDefault(u => u.Id == request.UserId).FullName,
+                                ClinicName = clinic.Name,
+                                DoctorName = _context.ApplicationUsers.FirstOrDefault(u => u.Id == clinic.DoctorId).FullName,
                                 RequestStatus = request.RequestStatus,
                                 PreferredDate = request.PreferredDate,
                                 RequestedAt = request.RequestedAt,
-                               
+
                             }
 
                         );
@@ -70,7 +71,7 @@ namespace MedicalAppointmentsSystem.Areas.User.Controllers
         }
 
         [HttpPost]
-        public IActionResult RequestAnAppointment(SetUserAppointmentRequestVM setUserAppointmentRequest)
+        public IActionResult RequestAnAppointment(SetUserAppointmentRequestVM setUserAppointmentRequest, int clinicId)
         {
             if (!ModelState.IsValid)
             {
@@ -83,7 +84,7 @@ namespace MedicalAppointmentsSystem.Areas.User.Controllers
             UserAppointmentRequest userAppointmentRequest = new UserAppointmentRequest()
             {
                 UserId = userId,
-                ClinicId = ViewBag.ClinicId,
+                ClinicId = clinicId,
                 ComplainsAbout = setUserAppointmentRequest.ComplainsAbout,
                 ChronicDiseases = setUserAppointmentRequest.ChronicDiseases,
                 PreferredDate = setUserAppointmentRequest.PreferredDate,
@@ -108,10 +109,15 @@ namespace MedicalAppointmentsSystem.Areas.User.Controllers
 
                 userAppointmentRequest.DocumentsUrl = _fileService.SaveFile(setUserAppointmentRequest.Document, folderPath, @"\Documents\UserRequests\" + userId + "\\");
 
+                _context.userAppointmentRequests.Update(userAppointmentRequest);
+                _context.SaveChanges();
+
             }
 
-            _context.userAppointmentRequests.Update(userAppointmentRequest);
-            _context.SaveChanges();
+
+
+
+
 
             Clinic clinic = _context.Clinics.FirstOrDefault(c => c.Id == userAppointmentRequest.ClinicId);
             ApplicationUser doctor = _context.ApplicationUsers.FirstOrDefault(d => d.Id == clinic.DoctorId);
@@ -129,6 +135,8 @@ namespace MedicalAppointmentsSystem.Areas.User.Controllers
                 "Best regards,\n" +
                 "Medical Appointments System"
             };
+
+            _emailService.SendMail(mailData);
 
             TempData["Success"] = "Appointment request is sent to the doctor successfully, You will receive an email once the doctor schedules your appointment.    ";
             return RedirectToAction(nameof(Index));
