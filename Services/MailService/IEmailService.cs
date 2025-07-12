@@ -1,6 +1,6 @@
 ﻿namespace MedicalAppointmentsSystem.Services.MailService
 {
-    public interface IEmailSerivce
+    public interface IEmailService
     {
         bool SendMail(MailData Mail_Data);
     }

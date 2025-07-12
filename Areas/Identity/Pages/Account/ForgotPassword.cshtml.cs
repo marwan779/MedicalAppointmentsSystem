@@ -20,9 +20,9 @@ namespace MedicalAppointmentsSystem.Areas.Identity.Pages.Account
     public class ForgotPasswordModel : PageModel
     {
         private readonly UserManager<IdentityUser> _userManager;
-        private readonly IEmailSerivce _emailSender;
+        private readonly IEmailService _emailSender;
 
-        public ForgotPasswordModel(UserManager<IdentityUser> userManager, IEmailSerivce emailSender)
+        public ForgotPasswordModel(UserManager<IdentityUser> userManager, IEmailService emailSender)
         {
             _userManager = userManager;
             _emailSender = emailSender;

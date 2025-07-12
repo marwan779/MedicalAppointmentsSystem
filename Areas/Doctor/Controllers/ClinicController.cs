@@ -176,14 +176,14 @@ namespace MedicalAppointmentsSystem.Areas.Controllers
 
             if (editClinicVM.Image != null)
             {
-                string folderPath = Path.Combine(_webHostEnvironment.WebRootPath, "Images", "Clinics", clinic.Id.ToString());
-                clinic.ImagePath = _fileService.UpdateImage(editClinicVM.Image, clinic.ImagePath, folderPath, @"\Images\Clinics\" + clinic.Id.ToString() + "\\");
-
-                if (String.IsNullOrEmpty(clinic.ImagePath))
+                if (!StaticDetails.allowedImageExtensions.Contains(Path.GetExtension(editClinicVM.Image.FileName)))
                 {
                     TempData["Error"] = "Invalid image type. Only .jpg, .jpeg, and .png files are allowed.";
                     return View(editClinicVM);
                 }
+
+                string folderPath = Path.Combine(_webHostEnvironment.WebRootPath, "Images", "Clinics", clinic.Id.ToString());
+                clinic.ImagePath = _fileService.UpdateFile(editClinicVM.Image, clinic.ImagePath, folderPath, @"\Images\Clinics\" + clinic.Id.ToString() + "\\");
             }
 
             _context.Clinics.Update(clinic);

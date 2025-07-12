@@ -1,0 +1,139 @@
+﻿@using MedicalAppointmentsSystem.Areas.User.Models.ViewModels
+@model SetUserAppointmentRequestVM
+@{
+	ViewData["Title"] = "Request Appointment";
+	Layout = "_Layout";
+}
+
+<div class="container mt-5">
+	<div class="row justify-content-center">
+		<div class="col-lg-8">
+			<div class="card shadow-sm">
+				<div class="card-header bg-primary text-white">
+					<h3 class="mb-0"><i class="fas fa-calendar-plus me-2"></i>@ViewData["Title"]</h3>
+				</div>
+				<div class="card-body">
+					@if (TempData["Error"] != null)
+					{
+						<div class="alert alert-danger alert-dismissible fade show" role="alert">
+							@TempData["Error"]
+							<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+						</div>
+					}
+
+					<form asp-action="RequestAnAppointment" method="post" enctype="multipart/form-data">
+						<input type="hidden" asp-for="ClinicId" />
+
+						<div class="row mb-4">
+							<div class="col-md-6">
+								<div class="card h-100 border-primary">
+									<div class="card-body">
+										<h5 class="card-title text-primary"><i class="fas fa-info-circle me-2"></i>Appointment Details</h5>
+
+										@* <div class="mb-3">
+											<label asp-for="RequestedAt" class="form-label">Preferred Date</label>
+											<input asp-for="RequestedAt" type="datetime-local" class="form-control"
+												   min="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" />
+											<span asp-validation-for="RequestedAt" class="text-danger"></span>
+										</div> *@
+
+										<div class="mb-3">
+											<label asp-for="Document" class="form-label">Medical Documents (PDF only)</label>
+											<input asp-for="Document" type="file" class="form-control" accept=".pdf" />
+											<small class="text-muted">Upload any relevant medical reports (max 5MB)</small>
+											<span asp-validation-for="Document" class="text-danger"></span>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div class="col-md-6">
+								<div class="card h-100 border-primary">
+									<div class="card-body">
+										<h5 class="card-title text-primary"><i class="fas fa-user-injured me-2"></i>Medical Information</h5>
+
+										<div class="mb-3">
+											<label asp-for="ComplainsAbout" class="form-label">Complaints/Reason for Visit*</label>
+											<textarea asp-for="ComplainsAbout" class="form-control" rows="3"
+													  placeholder="Describe your symptoms or reason for appointment"></textarea>
+											<span asp-validation-for="ComplainsAbout" class="text-danger"></span>
+										</div>
+
+										<div class="mb-3">
+											<label asp-for="ChronicDiseases" class="form-label">Chronic Diseases/Conditions</label>
+											<textarea asp-for="ChronicDiseases" class="form-control" rows="2"
+													  placeholder="List any chronic conditions you have"></textarea>
+											<span asp-validation-for="ChronicDiseases" class="text-danger"></span>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="d-grid gap-2 d-md-flex justify-content-md-end">
+							<a asp-action="Index" class="btn btn-outline-secondary me-md-2">
+								<i class="fas fa-arrow-left me-1"></i> Cancel
+							</a>
+							<button type="submit" class="btn btn-primary">
+								<i class="fas fa-paper-plane me-1"></i> Submit Request
+							</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<style>
+	.card {
+		border-radius: 10px;
+		transition: transform 0.3s ease;
+	}
+
+		.card:hover {
+			transform: translateY(-3px);
+			box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+		}
+
+	.card-header {
+		border-radius: 10px 10px 0 0 !important;
+	}
+
+	.border-primary {
+		border-left: 4px solid var(--medical-primary) !important;
+	}
+
+	textarea {
+		min-height: 100px;
+		resize: vertical;
+	}
+
+	.form-control:focus {
+		border-color: var(--medical-primary);
+		box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+	}
+</style>
+
+@section Scripts {
+	<partial name="_ValidationScriptsPartial" />
+	<script>
+		// Set minimum datetime for the appointment (current time + 1 hour)
+		document.addEventListener('DOMContentLoaded', function() {
+			const now = new Date();
+			now.setHours(now.getHours() + 1);
+			const minDateTime = now.toISOString().slice(0, 16);
+			document.getElementById('RequestedAt').min = minDateTime;
+
+			// File size validation
+			document.getElementById('Document').addEventListener('change', function(e) {
+				const file = e.target.files[0];
+				if (file && file.size > 5 * 1024 * 1024) { // 5MB
+					alert('File size exceeds 5MB limit');
+					e.target.value = '';
+				}
+			});
+		});
+	</script>
+}

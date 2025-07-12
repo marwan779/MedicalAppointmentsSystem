@@ -4,6 +4,7 @@ using MedicalAppointmentsSystem.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MedicalAppointmentsSystem.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250710205814_UpdateUserAppointmentRequestTable2")]
+    partial class UpdateUserAppointmentRequestTable2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -43,9 +46,6 @@ namespace MedicalAppointmentsSystem.Migrations
                     b.Property<string>("DocumentsUrl")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateOnly>("PreferredDate")
-                        .HasColumnType("date");
-
                     b.Property<string>("RequestStatus")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -55,9 +55,11 @@ namespace MedicalAppointmentsSystem.Migrations
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("userAppointmentRequests");
                 });
@@ -444,6 +446,17 @@ namespace MedicalAppointmentsSystem.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasDiscriminator().HasValue("ApplicationUser");
+                });
+
+            modelBuilder.Entity("MedicalAppointmentsSystem.Areas.User.Models.UserAppointmentRequest", b =>
+                {
+                    b.HasOne("MedicalAppointmentsSystem.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("MedicalAppointmentsSystem.Models.Clinic", b =>

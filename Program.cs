@@ -30,7 +30,7 @@ namespace MedicalAppointmentsSystem
             /*============================== SERVICES ==============================*/
             builder.Services.AddTransient<IEmailSender, EmailSender>();    
             
-            builder.Services.AddTransient<IEmailSerivce, EmailSerivce>();
+            builder.Services.AddTransient<IEmailService, EmailService>();
 
             builder.Services.AddScoped <IFileService, FileService>();
 

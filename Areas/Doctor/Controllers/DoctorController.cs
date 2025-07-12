@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using MedicalAppointmentsSystem.Data;
 using MedicalAppointmentsSystem.Models;
+using MedicalAppointmentsSystem.Models.ViewModels.Clinic;
 using MedicalAppointmentsSystem.Models.ViewModels.Doctor;
 using MedicalAppointmentsSystem.Services.ImageService;
 using Microsoft.AspNetCore.Authorization;
@@ -16,12 +17,12 @@ namespace MedicalAppointmentsSystem.Areas.Doctor.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IWebHostEnvironment _webHostEnvironment;
-        private readonly IImageService _imageService;
-        public DoctorController(ApplicationDbContext context, IWebHostEnvironment webHostEnvironment, IImageService imageService)
+        private readonly IFileService _fileService;
+        public DoctorController(ApplicationDbContext context, IWebHostEnvironment webHostEnvironment, IFileService fileService)
         {
             _context = context;
             _webHostEnvironment = webHostEnvironment;
-            _imageService = imageService;
+            _fileService = fileService;
         }
         [HttpGet]
         public IActionResult Index()
@@ -92,6 +93,20 @@ namespace MedicalAppointmentsSystem.Areas.Doctor.Controllers
                 return View(addDoctorInformationVM);
             }
 
+            if (!StaticDetails.allowedImageExtensions.Contains(Path.GetExtension(addDoctorInformationVM.IdProof.FileName))
+                || !StaticDetails.allowedImageExtensions.Contains(Path.GetExtension(addDoctorInformationVM.LicenseImage.FileName))
+                || !StaticDetails.allowedImageExtensions.Contains(Path.GetExtension(addDoctorInformationVM.Photo.FileName)))
+            {
+                TempData["Error"] = "Invalid image type. Only .jpg, .jpeg, and .png files are allowed.";
+                addDoctorInformationVM.SpecializationList = StaticDetails.MedicalSpecializations
+                 .Select(i => i).Select(i => new SelectListItem()
+                 {
+                     Text = i,
+                     Value = i
+                 });
+                return View(addDoctorInformationVM);
+            }
+
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var UserId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
 
@@ -117,17 +132,9 @@ namespace MedicalAppointmentsSystem.Areas.Doctor.Controllers
             Directory.CreateDirectory(folderPath);
 
 
-            doctorInformation.IdProofPath = _imageService.SaveImage(addDoctorInformationVM.IdProof, folderPath, @"\Images\Doctors\" + UserId + "\\");
-            doctorInformation.PhotoPath = _imageService.SaveImage(addDoctorInformationVM.Photo, folderPath, @"\Images\Doctors\" + UserId + "\\");
-            doctorInformation.LicenseImagePath = _imageService.SaveImage(addDoctorInformationVM.LicenseImage, folderPath, @"\Images\Doctors\" + UserId + "\\");
-
-            if (String.IsNullOrEmpty(doctorInformation.LicenseImagePath) ||
-                String.IsNullOrEmpty(doctorInformation.PhotoPath) ||
-                String.IsNullOrEmpty(doctorInformation.IdProofPath))
-            {
-                TempData["Error"] = "Invalid image type. Only .jpg, .jpeg, and .png files are allowed.";
-                return RedirectToAction(nameof(AddDoctorInformation));
-            }
+            doctorInformation.IdProofPath = _fileService.SaveFile(addDoctorInformationVM.IdProof, folderPath, @"\Images\Doctors\" + UserId + "\\");
+            doctorInformation.PhotoPath = _fileService.SaveFile(addDoctorInformationVM.Photo, folderPath, @"\Images\Doctors\" + UserId + "\\");
+            doctorInformation.LicenseImagePath = _fileService.SaveFile(addDoctorInformationVM.LicenseImage, folderPath, @"\Images\Doctors\" + UserId + "\\");
 
             _context.DoctorInformation.Add(doctorInformation);
 
@@ -209,21 +216,56 @@ namespace MedicalAppointmentsSystem.Areas.Doctor.Controllers
             string folderPath = Path.Combine(_webHostEnvironment.WebRootPath, "Images", "Doctors", UserId);
 
             if (editDoctorInformationVM.IdProof != null)
-                doctorInformation.IdProofPath = _imageService.UpdateImage(editDoctorInformationVM.IdProof, editDoctorInformationVM.IdProofPath, folderPath, @"\Images\Doctors\" + UserId + "\\");
+            {
+                if (!StaticDetails.allowedImageExtensions.Contains(Path.GetExtension(editDoctorInformationVM.IdProof.FileName)))
+                {
+                    TempData["Error"] = "Invalid image type. Only .jpg, .jpeg, and .png files are allowed.";
+                    editDoctorInformationVM.SpecializationList = StaticDetails.MedicalSpecializations
+                     .Select(i => i).Select(i => new SelectListItem()
+                     {
+                         Text = i,
+                         Value = i
+                     });
+                    return View(editDoctorInformationVM);
+                }
+
+                doctorInformation.IdProofPath = _fileService.UpdateFile(editDoctorInformationVM.IdProof, editDoctorInformationVM.IdProofPath, folderPath, @"\Images\Doctors\" + UserId + "\\");
+            }
 
             if (editDoctorInformationVM.Photo != null)
-                doctorInformation.PhotoPath = _imageService.UpdateImage(editDoctorInformationVM.Photo, editDoctorInformationVM.PhotoPath, folderPath, @"\Images\Doctors\" + UserId + "\\");
+            {
+                if (!StaticDetails.allowedImageExtensions.Contains(Path.GetExtension(editDoctorInformationVM.Photo.FileName)))
+                {
+                    TempData["Error"] = "Invalid image type. Only .jpg, .jpeg, and .png files are allowed.";
+                    editDoctorInformationVM.SpecializationList = StaticDetails.MedicalSpecializations
+                     .Select(i => i).Select(i => new SelectListItem()
+                     {
+                         Text = i,
+                         Value = i
+                     });
+                    return View(editDoctorInformationVM);
+                }
+
+                doctorInformation.PhotoPath = _fileService.UpdateFile(editDoctorInformationVM.Photo, editDoctorInformationVM.PhotoPath, folderPath, @"\Images\Doctors\" + UserId + "\\");
+            }
 
             if (editDoctorInformationVM.LicenseImage != null)
-                doctorInformation.LicenseImagePath = _imageService.UpdateImage(editDoctorInformationVM.LicenseImage, editDoctorInformationVM.LicenseImagePath, folderPath, @"\Images\Doctors\" + UserId + "\\");
-
-            if (String.IsNullOrEmpty(doctorInformation.LicenseImagePath) ||
-                String.IsNullOrEmpty(doctorInformation.PhotoPath) ||
-                String.IsNullOrEmpty(doctorInformation.IdProofPath))
             {
-                TempData["Error"] = "Invalid image type. Only .jpg, .jpeg, and .png files are allowed.";
-                return RedirectToAction(nameof(EditDoctorInformation));
+                if (!StaticDetails.allowedImageExtensions.Contains(Path.GetExtension(editDoctorInformationVM.LicenseImage.FileName)))
+                {
+                    TempData["Error"] = "Invalid image type. Only .jpg, .jpeg, and .png files are allowed.";
+                    editDoctorInformationVM.SpecializationList = StaticDetails.MedicalSpecializations
+                     .Select(i => i).Select(i => new SelectListItem()
+                     {
+                         Text = i,
+                         Value = i
+                     });
+                    return View(editDoctorInformationVM);
+                }
+
+                doctorInformation.LicenseImagePath = _fileService.UpdateFile(editDoctorInformationVM.LicenseImage, editDoctorInformationVM.LicenseImagePath, folderPath, @"\Images\Doctors\" + UserId + "\\");
             }
+
 
             _context.Update(doctorInformation);
             _context.SaveChanges();

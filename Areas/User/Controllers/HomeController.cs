@@ -20,7 +20,7 @@ namespace MedicalAppointmentsSystem.Areas.User.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index(int pageSize = 2, int pageNumber = 1, string searchTerm = "")
+        public IActionResult Index(int pageSize = 6, int pageNumber = 1, string searchTerm = "")
         {
             IQueryable<Clinic> clinicsQuery = _context.Clinics.Include(a => a.Doctor).AsQueryable();
 

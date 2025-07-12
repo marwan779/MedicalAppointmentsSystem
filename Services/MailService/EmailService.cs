@@ -7,10 +7,10 @@ using MimeKit;
 
 namespace MedicalAppointmentsSystem.Services.MailService
 {
-    public class EmailSerivce : IEmailSerivce
+    public class EmailService : IEmailService
     {
         MailSettings Mail_Settings = null;
-        public EmailSerivce(IOptions<MailSettings> options)
+        public EmailService(IOptions<MailSettings> options)
         {
             Mail_Settings = options.Value;
         }

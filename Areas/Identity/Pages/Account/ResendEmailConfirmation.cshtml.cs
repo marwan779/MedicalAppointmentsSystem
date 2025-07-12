@@ -23,10 +23,10 @@ namespace MedicalAppointmentsSystem.Areas.Identity.Pages.Account
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IEmailSender _emailSender;
-        private readonly IEmailSerivce _emailSerivce;
+        private readonly IEmailService _emailSerivce;
 
         public ResendEmailConfirmationModel(UserManager<IdentityUser> userManager, IEmailSender emailSender, 
-            IEmailSerivce emailSerivce)
+            IEmailService emailSerivce)
         {
             _userManager = userManager;
             _emailSender = emailSender;
