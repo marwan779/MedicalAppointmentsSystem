@@ -6,6 +6,7 @@ namespace MedicalAppointmentsSystem.Areas.User.Models
     {
         public int Id { get; set; } 
         public string UserId { get; set; } = string.Empty;
+        public string DoctorId { get; set; } = string.Empty;
         public int ClinicId { get; set; } 
         public DateTime RequestedAt { get; set; } = DateTime.UtcNow;
         public DateOnly PreferredDate { get; set; }

@@ -81,10 +81,14 @@ namespace MedicalAppointmentsSystem.Areas.User.Controllers
             var claimsidentity = (ClaimsIdentity)User.Identity;
             var userId = claimsidentity.FindFirst(ClaimTypes.NameIdentifier).Value;
 
+            Clinic? clinic = _context.Clinics.FirstOrDefault(c => c.Id == clinicId);
+            ApplicationUser? doctor = _context.ApplicationUsers.FirstOrDefault(d => d.Id == clinic.DoctorId);
+
             UserAppointmentRequest userAppointmentRequest = new UserAppointmentRequest()
             {
                 UserId = userId,
                 ClinicId = clinicId,
+                DoctorId = doctor.Id,
                 ComplainsAbout = setUserAppointmentRequest.ComplainsAbout,
                 ChronicDiseases = setUserAppointmentRequest.ChronicDiseases,
                 PreferredDate = setUserAppointmentRequest.PreferredDate,
@@ -113,14 +117,6 @@ namespace MedicalAppointmentsSystem.Areas.User.Controllers
                 _context.SaveChanges();
 
             }
-
-
-
-
-
-
-            Clinic clinic = _context.Clinics.FirstOrDefault(c => c.Id == userAppointmentRequest.ClinicId);
-            ApplicationUser doctor = _context.ApplicationUsers.FirstOrDefault(d => d.Id == clinic.DoctorId);
 
 
             MailData mailData = new MailData()

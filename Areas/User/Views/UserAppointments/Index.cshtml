@@ -1,4 +1,5 @@
-﻿@using MedicalAppointmentsSystem.Areas.User.Models.ViewModels
+﻿@using MedicalAppointmentsSystem
+@using MedicalAppointmentsSystem.Areas.User.Models.ViewModels
 @model List<UserAppointmentRequestVM>
 @{
     ViewData["Title"] = "My Appointment Requests";
@@ -51,11 +52,12 @@
                                     <td>@request.PreferredDate.ToString("MMMM dd, yyyy")</td>
                                     <td>@request.RequestedAt.ToString("g")</td>
                                     <td>
-                                        @if (request.RequestStatus == "Approved")
+                                        @if (request.RequestStatus == StaticDetails.AppointmentScheduled)
                                         {
                                             <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i> @request.RequestStatus</span>
+                                            <a asp-area="User">Appointment Details</a>
                                         }
-                                        else if (request.RequestStatus == "Rejected")
+                                        else if (request.RequestStatus == StaticDetails.RequestCanceled)
                                         {
                                             <span class="badge bg-danger"><i class="fas fa-times-circle me-1"></i> @request.RequestStatus</span>
                                         }
