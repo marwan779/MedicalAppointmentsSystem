@@ -68,19 +68,31 @@
                                             <span class="text-muted">None</span>
                                         }
                                     </td>
-                                    
+
                                     <td>
                                         @if (request.RequestStatus == StaticDetails.AppointmentScheduled)
                                         {
-                                            <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i> @request.RequestStatus</span>
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-calendar-check me-1"></i> @request.RequestStatus
+                                            </span>
                                         }
-                                        else if (request.RequestStatus == StaticDetails.RequestCanceled)
+                                        else if (request.RequestStatus == StaticDetails.RequestRejected)
                                         {
-                                            <span class="badge bg-danger"><i class="fas fa-times-circle me-1"></i> @request.RequestStatus</span>
+                                            <span class="badge bg-danger">
+                                                <i class="fas fa-times-circle me-1"></i> @request.RequestStatus
+                                            </span>
                                         }
-                                        else
+                                        else if (request.RequestStatus == StaticDetails.RequestWithdrawn)
                                         {
-                                            <span class="badge bg-warning text-dark"><i class="fas fa-hourglass-half me-1"></i> @request.RequestStatus</span>
+                                            <span class="badge bg-secondary">
+                                                <i class="fas fa-user-slash me-1"></i> @request.RequestStatus
+                                            </span>
+                                        }
+                                        else if (request.RequestStatus == StaticDetails.RequestUnderReview)
+                                        {
+                                            <span class="badge bg-warning text-dark">
+                                                <i class="fas fa-hourglass-half me-1"></i> @request.RequestStatus
+                                            </span>
                                         }
                                     </td>
                                     <td>

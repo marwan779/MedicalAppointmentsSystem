@@ -136,8 +136,41 @@ namespace MedicalAppointmentsSystem.Areas.User.Controllers
 
             TempData["Success"] = "Appointment request is sent to the doctor successfully, You will receive an email once the doctor schedules your appointment.    ";
             return RedirectToAction(nameof(Index));
+        }
 
+        [HttpGet]
+        public IActionResult WithdrawAppointmentRequest(int requestId)
+        {
+            UserAppointmentRequest? userAppointmentRequest = _context.userAppointmentRequests
+                .FirstOrDefault(r => r.Id ==  requestId);
 
+            if (userAppointmentRequest == null)
+            {
+                ViewData["Error"] = "No Such Request";
+                return RedirectToAction(nameof(Index));
+            }
+
+            if (userAppointmentRequest.RequestStatus == StaticDetails.AppointmentScheduled)
+            {
+                TempData["Error"] = "This Appointment Is Already Scheduled, You Can Contact The Doctor If You Want To Cancel The Appointment";
+                return RedirectToAction(nameof(Index));
+            }
+
+            if(!String.IsNullOrEmpty(userAppointmentRequest.DocumentsUrl))
+            {
+                _fileService.DeleteFile(userAppointmentRequest.DocumentsUrl);
+            }
+
+            userAppointmentRequest.RequestStatus = StaticDetails.RequestWithdrawn;
+            userAppointmentRequest.ChronicDiseases = "-";
+            userAppointmentRequest.ComplainsAbout = "-";
+            userAppointmentRequest.DocumentsUrl = null;
+       
+            _context.userAppointmentRequests.Update(userAppointmentRequest);
+            _context.SaveChanges();
+
+            TempData["Success"] = "Appointment Request Is Withdrawn Successfully";
+            return RedirectToAction(nameof(Index));
         }
     }
 }

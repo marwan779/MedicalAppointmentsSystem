@@ -36,9 +36,10 @@
         "Rheumatology"
         };
 
-        public const string RequestUnderReview = "Under Review";
+        public const string RequestUnderReview = "Request Under Review";
         public const string AppointmentScheduled = "Appointment Scheduled";
-        public const string RequestCanceled = "Appointment Canceled";
+        public const string RequestRejected = "Request Rejected";
+        public const string RequestWithdrawn = "Request Withdrawn";
 
         public static List<string> allowedImageExtensions = new List<string> { ".jpg", ".jpeg", ".png" };
     }

@@ -8,6 +8,9 @@ namespace MedicalAppointmentsSystem.Services.ImageService
         {
             _webHostEnvironment = webHostEnvironment;
         }
+
+        
+
         public string SaveFile(IFormFile file, string folderPath, string fileRootPath)
         {
             //Get WWWRootPath
@@ -23,14 +26,14 @@ namespace MedicalAppointmentsSystem.Services.ImageService
 
             string filePath = Path.Combine(rootPath, folderPath);
 
-            
-            using(var fileStream = new FileStream(Path.Combine(filePath, fileName), FileMode.Create))
+
+            using (var fileStream = new FileStream(Path.Combine(filePath, fileName), FileMode.Create))
             {
                 file.CopyTo(fileStream);
             }
 
 
-            
+
             return fileRootPath + fileName;
         }
 
@@ -61,5 +64,22 @@ namespace MedicalAppointmentsSystem.Services.ImageService
 
             return FileRootPath + newFileName;
         }
+
+        public bool DeleteFile(string filePath)
+        {
+            string rootPath = _webHostEnvironment.WebRootPath;
+
+            string fullFilePath = rootPath + filePath;
+
+            if (!File.Exists(fullFilePath))
+            {
+                return false;
+            }
+
+            File.Delete(fullFilePath);
+
+            return true;
+        }
+
     }
 }

@@ -8,7 +8,7 @@ namespace MedicalAppointmentsSystem.Areas.User.Models
         public string UserId { get; set; } = string.Empty;
         public string DoctorId { get; set; } = string.Empty;
         public int ClinicId { get; set; } 
-        public DateTime RequestedAt { get; set; } = DateTime.UtcNow;
+        public DateTime RequestedAt { get; set; } = DateTime.Now;
         public DateOnly PreferredDate { get; set; }
         public string? DocumentsUrl {  get; set; } = string.Empty;   
         public string RequestStatus { get; set; } = StaticDetails.RequestUnderReview;
