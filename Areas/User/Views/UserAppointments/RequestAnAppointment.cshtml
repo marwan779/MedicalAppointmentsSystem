@@ -1,8 +1,11 @@
 ﻿@using MedicalAppointmentsSystem.Areas.User.Models.ViewModels
+@using MedicalAppointmentsSystem.Models.ViewModels.Appointments
 @model SetUserAppointmentRequestVM
 @{
 	ViewData["Title"] = "Request Appointment";
 	Layout = "_Layout";
+
+	List<DoctorAvailabilityVM> doctorAvailabilities = ViewBag.DoctorAvailabilityVMs;
 }
 
 <div class="container mt-5">
@@ -20,6 +23,40 @@
 							<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 						</div>
 					}
+
+
+					<!-- Doctor Availability Section -->
+					<div class="mb-4">
+						<h6 class="text-primary"><i class="fas fa-clock me-2"></i>Doctor's Availability</h6>
+						@if (doctorAvailabilities.Any())
+						{
+							<div class="availability-container">
+								@foreach (var availability in doctorAvailabilities.GroupBy(a => a.Day))
+								{
+									<div class="mb-3">
+										<strong>@availability.Key:</strong>
+										<div class="d-flex flex-wrap gap-2 mt-2">
+											@foreach (var slot in availability)
+											{
+												<span class="badge bg-light text-dark border">
+													@DateTime.Today.Add(slot.StartTime).ToString("h:mm tt") - @DateTime.Today.Add(slot.EndTime).ToString("h:mm tt")
+													@* @slot.StartTime.ToString(@"hh\:mm") - @slot.EndTime.ToString(@"hh\:mm") *@
+												</span>
+											}
+										</div>
+									</div>
+								}
+							</div>
+						}
+						else
+						{
+							<div class="alert alert-warning">
+								<i class="fas fa-exclamation-circle me-1"></i> No availability information found
+							</div>
+						}
+					</div>
+
+
 
 					<form asp-action="RequestAnAppointment" method="post" enctype="multipart/form-data">
 						<input type="hidden" asp-for="ClinicId" />

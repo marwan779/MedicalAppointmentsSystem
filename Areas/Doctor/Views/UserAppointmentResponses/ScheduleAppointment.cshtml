@@ -1,0 +1,184 @@
+﻿@using MedicalAppointmentsSystem.Areas.Doctor.Models.ViewModels.UserAppointmentResponse
+@using MedicalAppointmentsSystem.Models.ViewModels.Appointments
+@model ScheduleUserAppointmentVM
+@{
+	ViewData["Title"] = "Schedule Appointment";
+	Layout = "_Layout";
+
+	List<DoctorAvailabilityVM> doctorAvailabilities = ViewBag.DoctorAvailability as List<DoctorAvailabilityVM> ?? new List<DoctorAvailabilityVM>();
+	IEnumerable<SelectListItem> availableDays = ViewBag.DoctorAvailableDays as IEnumerable<SelectListItem> ?? new List<SelectListItem>();
+	int requestId = ViewBag.RequestId;
+}
+
+<div class="container mt-5">
+	<div class="row justify-content-center">
+		<div class="col-lg-8">
+			<div class="card shadow-sm">
+				<div class="card-header bg-primary text-white">
+					<h3 class="mb-0"><i class="fas fa-calendar-plus me-2"></i>@ViewData["Title"]</h3>
+				</div>
+				<div class="card-body">
+					@if (TempData["Error"] != null)
+					{
+						<div class="alert alert-danger alert-dismissible fade show" role="alert">
+							@TempData["Error"]
+							<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+						</div>
+					}
+
+					<form asp-action="ScheduleRequest" method="post">
+						<input type="hidden" asp-for="DoctorId" value="@Model?.DoctorId" />
+						<input type="hidden" name="requestId" value="@requestId" />
+
+						<div class="row mb-4">
+							<div class="col-md-6">
+								<div class="card h-100 border-primary">
+									<div class="card-body">
+										<h5 class="card-title text-primary"><i class="fas fa-calendar-alt me-2"></i>Schedule Details</h5>
+
+										<div class="mb-3">
+											<label asp-for="AppointmentDate" class="form-label">Appointment Date*</label>
+											<input asp-for="AppointmentDate" type="date"
+												   class="form-control"
+												   min="@DateTime.Now.ToString("yyyy-MM-dd")"
+												   max="@DateTime.Now.AddMonths(3).ToString("yyyy-MM-dd")" />
+											<span asp-validation-for="AppointmentDate" class="text-danger"></span>
+										</div>
+
+										<div class="mb-3">
+											<label asp-for="AppointmentDay" class="form-label">Day of Week*</label>
+											<select asp-for="AppointmentDay" class="form-select" id="daySelect">
+												<option value="">-- Select Day --</option>
+												@foreach (var day in availableDays)
+												{
+													<option value="@day.Value">@day.Text</option>
+												}
+											</select>
+											<span asp-validation-for="AppointmentDay" class="text-danger"></span>
+										</div>
+
+										<div class="mb-3">
+											<label asp-for="AppointmentStartTime" class="form-label">Start Time*</label>
+											<input asp-for="AppointmentStartTime" type="time" class="form-control" />
+											<span asp-validation-for="AppointmentStartTime" class="text-danger"></span>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div class="col-md-6">
+								<div class="card h-100 border-primary">
+									<div class="card-body">
+										<h5 class="card-title text-primary"><i class="fas fa-clock me-2"></i>Doctor's Availability</h5>
+
+										@if (doctorAvailabilities.Any())
+										{
+											<div class="availability-table">
+												<table class="table table-sm">
+													<thead>
+														<tr>
+															<th>Day</th>
+															<th>Available Hours</th>
+														</tr>
+													</thead>
+													<tbody>
+														@foreach (var availability in doctorAvailabilities.GroupBy(a => a.Day))
+														{
+															<tr>
+																<td><strong>@availability.Key</strong></td>
+																<td>
+																	@foreach (var slot in availability)
+																	{
+																		<span class="badge bg-light text-dark border me-1">
+																			@DateTime.Today.Add(slot.StartTime).ToString("h:mm tt") - @DateTime.Today.Add(slot.EndTime).ToString("h:mm tt")
+																		</span>
+																	}
+																</td>
+															</tr>
+														}
+													</tbody>
+												</table>
+											</div>
+										}
+										else
+										{
+											<div class="alert alert-warning">
+												<i class="fas fa-exclamation-circle me-1"></i> No availability information found
+											</div>
+										}
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="d-grid gap-2 d-md-flex justify-content-md-end">
+							<a asp-action="Index" class="btn btn-outline-secondary me-md-2">
+								<i class="fas fa-arrow-left me-1"></i> Cancel
+							</a>
+							<button type="submit" class="btn btn-primary" asp-route-reqeustId="@ViewBag.RequestId">
+								<i class="fas fa-calendar-check me-1"></i> Schedule Appointment
+							</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<style>
+	.card {
+		border-radius: 10px;
+		transition: transform 0.3s ease;
+	}
+
+		.card:hover {
+			transform: translateY(-3px);
+			box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+		}
+
+	.card-header {
+		border-radius: 10px 10px 0 0 !important;
+	}
+
+	.border-primary {
+		border-left: 4px solid var(--medical-primary) !important;
+	}
+
+	.availability-table {
+		max-height: 300px;
+		overflow-y: auto;
+	}
+
+		.availability-table table {
+			margin-bottom: 0;
+		}
+
+	.badge {
+		padding: 0.35em 0.65em;
+		font-weight: 500;
+	}
+</style>
+
+@section Scripts {
+	<partial name="_ValidationScriptsPartial" />
+	<script>
+		document.addEventListener('DOMContentLoaded', function() {
+			// Update day select when date changes
+			document.getElementById('AppointmentDate').addEventListener('change', function() {
+				const date = new Date(this.value);
+				const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
+				const daySelect = document.getElementById('daySelect');
+
+				// Set the selected day if it exists in options
+				for (let i = 0; i < daySelect.options.length; i++) {
+					if (daySelect.options[i].value.toLowerCase() === dayName.toLowerCase()) {
+						daySelect.value = daySelect.options[i].value;
+						break;
+					}
+				}
+			});
+		});
+	</script>
+}

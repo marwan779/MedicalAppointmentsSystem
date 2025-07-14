@@ -87,6 +87,17 @@
 												<i class="fas fa-user-times me-1"></i> Withdraw Request
 											</button>
 										}
+
+										@if (request.RequestStatus == StaticDetails.AppointmentScheduled)
+										{
+											@if (request.RequestStatus == StaticDetails.AppointmentScheduled)
+											{
+												<a asp-action="AppointmentDetails" asp-route-requestId="@request.Id"
+												   class="btn btn-sm btn-outline-primary rounded-pill px-3">
+													<i class="fas fa-calendar-check me-1"></i> View Details
+												</a>
+											}
+										}
 										
 									</td>
 
@@ -196,7 +207,7 @@
 				cancelButtonText: 'Cancel'
 			}).then((result) => {
 				if (result.isConfirmed) {
-					window.location.href = `/User/UserAppointments/WithdrawAppointmentRequest?requestId=${requestId}`;
+					window.location.href = `/User/UserAppointments/RejectRequest?requestId=${requestId}`;
 				}
 			})
 		}

@@ -1,13 +1,15 @@
 ﻿using System.Security.Claims;
+using MedicalAppointmentsSystem.Areas.Doctor.Models;
+using MedicalAppointmentsSystem.Areas.Doctor.Models.ViewModels.UserAppointmentResponse;
 using MedicalAppointmentsSystem.Areas.User.Models;
 using MedicalAppointmentsSystem.Areas.User.Models.ViewModels;
 using MedicalAppointmentsSystem.Data;
 using MedicalAppointmentsSystem.Models;
+using MedicalAppointmentsSystem.Models.ViewModels.Appointments;
 using MedicalAppointmentsSystem.Models.ViewModels.Clinic;
 using MedicalAppointmentsSystem.Services.ImageService;
 using MedicalAppointmentsSystem.Services.MailService;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MedicalAppointmentsSystem.Areas.User.Controllers
@@ -67,6 +69,31 @@ namespace MedicalAppointmentsSystem.Areas.User.Controllers
         public IActionResult RequestAnAppointment(int clinicId)
         {
             ViewBag.ClinicId = clinicId;
+
+            List<DoctorAvailability> doctorAvailabilities = _context.DoctorAvailabilities
+                .Where(d => d.ClinicId == clinicId).ToList();
+            
+
+            List<DoctorAvailabilityVM> doctorAvailabilityVMs = new List<DoctorAvailabilityVM> ();   
+
+            if(doctorAvailabilities.Any())
+            {
+                foreach(var doctorAvailability in doctorAvailabilities)
+                {
+                    doctorAvailabilityVMs.Add
+                        (
+                            new DoctorAvailabilityVM()
+                            {
+                                StartTime = doctorAvailability.StartTime,
+                                EndTime = doctorAvailability.EndTime,
+                                Day = doctorAvailability.Day
+                            }
+                        );
+                }
+            }
+
+            ViewBag.DoctorAvailabilityVMs = doctorAvailabilityVMs;
+
             return View();
         }
 
@@ -172,5 +199,36 @@ namespace MedicalAppointmentsSystem.Areas.User.Controllers
             TempData["Success"] = "Appointment Request Is Withdrawn Successfully";
             return RedirectToAction(nameof(Index));
         }
+
+        [HttpGet]
+        public IActionResult AppointmentDetails(int requestId)
+        {
+            UserAppointmentResponse? userAppointmentResponse = _context.UserAppointmentResponses
+                .FirstOrDefault(r => r.RequestId == requestId);
+
+
+            if (userAppointmentResponse == null)
+            {
+                if (userAppointmentResponse == null)
+                {
+                    ViewData["Error"] = "No Such Request";
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+            
+
+
+            AppointmentResponseVM AppointmentResponseVM = new AppointmentResponseVM()
+            {
+                Date = userAppointmentResponse.AppointmentDate,
+                Day = userAppointmentResponse.AppointmentDay,
+                Time = userAppointmentResponse.AppointmentStartTime,
+                Location = userAppointmentResponse.AppointmentLocation
+            };
+
+            return View(AppointmentResponseVM);
+        }
+
+        
     }
 }

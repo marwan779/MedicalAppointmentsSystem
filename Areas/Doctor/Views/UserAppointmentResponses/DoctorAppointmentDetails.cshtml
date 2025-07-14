@@ -1,0 +1,123 @@
+﻿@using MedicalAppointmentsSystem.Areas.Doctor.Models.ViewModels.UserAppointmentResponse
+@model DoctorAppointmentResponseVM
+@{
+    ViewData["Title"] = "Appointment Details";
+    Layout = "_Layout";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0"><i class="fas fa-calendar-check me-2"></i>@ViewData["Title"]</h3>
+                </div>
+                <div class="card-body">
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            @TempData["Error"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card mb-4 border-primary">
+                                <div class="card-body">
+                                    <h5 class="card-title text-primary"><i class="fas fa-info-circle me-2"></i>Appointment Information</h5>
+                                    <dl class="row">
+                                        <dt class="col-sm-4"><i class="fas fa-calendar-day me-1"></i> Date:</dt>
+                                        <dd class="col-sm-8">@Model.Date.ToString("MMMM dd, yyyy")</dd>
+
+                                        <dt class="col-sm-4"><i class="fas fa-clock me-1"></i> Day:</dt>
+                                        <dd class="col-sm-8">@Model.Day</dd>
+
+                                        <dt class="col-sm-4"><i class="fas fa-clock me-1"></i> Time:</dt>
+                                        <dd class="col-sm-8">@Model.Time.ToString(@"hh\:mm")</dd>
+
+                                        <dt class="col-sm-4"><i class="fas fa-map-marker-alt me-1 "></i>: </dt>
+                                        <dd class="col-sm-8">
+                                            <a href="https://www.google.com/maps?q=@Model.Location" target="_blank" class="text-decoration-none">
+                                                View Location
+                                            </a>
+                                        </dd>
+
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                        @* <div class="col-md-6">
+                            <div class="card mb-4 border-primary">
+                                <div class="card-body">
+                                    <h5 class="card-title text-primary"><i class="fas fa-map-marker-alt me-2"></i>Location</h5>
+                                    <div id="map" style="height: 200px; width: 100%; border-radius: 8px;"></div>
+                                    <a href="https://www.google.com/maps?q=@Model.Location"
+                                       target="_blank"
+                                       class="btn btn-sm btn-outline-primary mt-3">
+                                        <i class="fas fa-directions me-1"></i> Get Directions
+                                    </a>
+                                </div>
+                            </div>
+                        </div> *@
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
+                        <a asp-action="Index" class="btn btn-outline-secondary me-md-2">
+                            <i class="fas fa-arrow-left me-1"></i> Back to Appointments
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 10px;
+        transition: transform 0.3s ease;
+    }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+    .card-header {
+        border-radius: 10px 10px 0 0 !important;
+    }
+
+    .border-primary {
+        border-left: 4px solid var(--medical-primary) !important;
+    }
+
+    dt {
+        font-weight: 500;
+        color: var(--medical-primary);
+    }
+</style>
+
+
+@section Scripts {
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap" async defer></script>
+    <script>
+        function initMap() {
+            const coordinates = '@Model.Location'.split(',');
+            const lat = parseFloat(coordinates[0]);
+            const lng = parseFloat(coordinates[1]);
+
+            const location = { lat: lat, lng: lng };
+            const map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 15,
+                center: location,
+            });
+
+            new google.maps.Marker({
+                position: location,
+                map: map,
+                title: "Appointment Location"
+            });
+        }
+    </script>
+}
