@@ -1,4 +1,5 @@
-﻿using MedicalAppointmentsSystem.Areas.Doctor.Models;
+﻿using MedicalAppointmentsSystem.Areas.Admin.Models;
+using MedicalAppointmentsSystem.Areas.Doctor.Models;
 using MedicalAppointmentsSystem.Areas.User.Models;
 using MedicalAppointmentsSystem.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -19,5 +20,6 @@ namespace MedicalAppointmentsSystem.Data
         public DbSet<DoctorAvailability> DoctorAvailabilities { get; set; }
         public DbSet<UserAppointmentRequest> userAppointmentRequests { get; set; }
         public DbSet<UserAppointmentResponse> UserAppointmentResponses { get; set; }
+        public DbSet<UserComplaint> UserComplaints { get; set; }
     }
 }
