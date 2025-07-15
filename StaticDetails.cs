@@ -41,6 +41,10 @@
         public const string RequestRejected = "Request Rejected";
         public const string RequestWithdrawn = "Request Withdrawn";
 
+        public const string ComplaintUnderReview = "Complaint Under Review";
+        public const string DoctorInformed = "Doctor Informed";
+        public const string ComplaintWithdrawn = "Complaint Withdrawn";
+
         public static List<string> allowedImageExtensions = new List<string> { ".jpg", ".jpeg", ".png" };
     }
 }

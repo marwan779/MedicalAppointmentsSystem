@@ -1,0 +1,171 @@
+﻿@using MedicalAppointmentsSystem
+@using MedicalAppointmentsSystem.Areas.User.Controllers
+@model List<ComplaintVM>
+@{
+	ViewData["Title"] = "My Complaints";
+	Layout = "_Layout";
+}
+
+<div class="container mt-5">
+	<div class="d-flex justify-content-between align-items-center mb-4">
+		<h1 class="text-primary mb-0"><i class="fas fa-exclamation-circle me-2"></i>@ViewData["Title"]</h1>
+		<a asp-action="FileComplaint" class="btn btn-primary">
+			<i class="fas fa-plus-circle me-2"></i>File Complaint
+		</a>
+	</div>
+
+	@if (TempData["Success"] != null)
+	{
+		<div class="alert alert-success alert-dismissible fade show" role="alert">
+			@TempData["Success"]
+			<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+		</div>
+	}
+
+	@if (TempData["Error"] != null)
+	{
+		<div class="alert alert-danger alert-dismissible fade show" role="alert">
+			@TempData["Error"]
+			<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+		</div>
+	}
+
+	<div class="card shadow-sm">
+		<div class="card-header bg-primary text-white">
+			<h5 class="mb-0"><i class="fas fa-list me-2"></i>Complaint History</h5>
+		</div>
+		<div class="card-body">
+			@if (Model.Any())
+			{
+				<div class="table-responsive">
+					<table class="table table-hover align-middle">
+						<thead>
+							<tr>
+								<th><i class="fas fa-heading me-1"></i> Title</th>
+								<th><i class="fas fa-clinic-medical me-1"></i> Clinic</th>
+								<th><i class="fas fa-clock me-1"></i> Filed At</th>
+								<th><i class="fas fa-info-circle me-1"></i> Status</th>
+								<th><i class="fas fa-file me-1"></i> Document</th>
+								<th><i class="fas fa-cogs me-1"></i> Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							@foreach (var complaint in Model)
+							{
+								<tr>
+									<td>@complaint.ComplaintTitle</td>
+									<td>@complaint.ClinicName</td>
+									<td>@complaint.FiledAt.ToString("g")</td>
+									<td>
+										@if (complaint.ComplaintStatus == StaticDetails.DoctorInformed)
+										{
+											<span class="badge bg-info">
+												<i class="fas fa-user-md me-1"></i> @complaint.ComplaintStatus
+											</span>
+										}
+										else if (complaint.ComplaintStatus == StaticDetails.ComplaintWithdrawn)
+										{
+											<span class="badge bg-secondary">
+												<i class="fas fa-user-slash me-1"></i> @complaint.ComplaintStatus
+											</span>
+										}
+										else
+										{
+											<span class="badge bg-warning text-dark">
+												<i class="fas fa-hourglass-half me-1"></i> @complaint.ComplaintStatus
+											</span>
+										}
+									</td>
+									<td>
+										@if (!string.IsNullOrEmpty(complaint.DocumentUrl))
+										{
+											<a href="@complaint.DocumentUrl" target="_blank" class="btn btn-sm btn-outline-primary">
+												<i class="fas fa-file-pdf me-1"></i> View
+											</a>
+										}
+										else
+										{
+											<span class="text-muted">None</span>
+										}
+									</td>
+									<td>
+
+										@if (complaint.ComplaintStatus == StaticDetails.ComplaintUnderReview)
+										{
+											<button onclick="confirmWithdrawal('@complaint.Id')"
+													class="btn btn-sm btn-outline-danger">
+												<i class="fas fa-times me-1"></i> Withdraw
+											</button>
+										}
+
+									</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+			}
+			else
+			{
+				<div class="alert alert-info">
+					<h5 class="alert-heading"><i class="fas fa-info-circle me-2"></i>No Complaints Found</h5>
+					<p class="mb-0">You haven't filed any complaints yet. Click the 'File Complaint' button to submit a new complaint.</p>
+				</div>
+			}
+		</div>
+	</div>
+</div>
+
+<style>
+	.table {
+		border-radius: 10px;
+		overflow: hidden;
+	}
+
+		.table thead th {
+			background-color: #f8f9fa;
+			border-bottom: 2px solid var(--medical-primary);
+			color: var(--medical-primary);
+		}
+
+	.table-hover tbody tr:hover {
+		background-color: rgba(13, 110, 253, 0.05);
+	}
+
+	.badge {
+		padding: 0.5em 0.75em;
+		font-weight: 500;
+	}
+
+	.card {
+		border-radius: 10px;
+		border: none;
+		box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+	}
+
+	.card-header {
+		border-radius: 10px 10px 0 0 !important;
+	}
+</style>
+
+@section Scripts {
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<script>
+		function confirmWithdrawal(complaintId) {
+			Swal.fire({
+				title: 'Confirm Withdrawal',
+				text: "Are you sure you want to withdraw this complaint?",
+				icon: 'warning',
+				showCancelButton: true,
+				confirmButtonColor: '#d33',
+				cancelButtonColor: '#6c757d',
+				confirmButtonText: 'Yes, withdraw it',
+				cancelButtonText: 'Cancel'
+			}).then((result) => {
+				if (result.isConfirmed) {
+					window.location.href = `/User/Complaints/WithdrawComplaint?complaintId=${complaintId}`;
+				}
+			});
+		}
+	</script>
+}

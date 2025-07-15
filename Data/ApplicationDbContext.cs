@@ -1,5 +1,4 @@
-﻿using MedicalAppointmentsSystem.Areas.Admin.Models;
-using MedicalAppointmentsSystem.Areas.Doctor.Models;
+﻿using MedicalAppointmentsSystem.Areas.Doctor.Models;
 using MedicalAppointmentsSystem.Areas.User.Models;
 using MedicalAppointmentsSystem.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
