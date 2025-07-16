@@ -1,4 +1,4 @@
-﻿namespace MedicalAppointmentsSystem.Areas.User.Controllers
+﻿namespace MedicalAppointmentsSystem.Areas.User.Models.ViewModels
 {
     public class ComplaintVM
     {

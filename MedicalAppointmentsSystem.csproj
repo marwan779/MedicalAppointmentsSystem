@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <Folder Include="Areas\Admin\Models\" />
+    <Folder Include="Models\ViewModels\" />
     <Folder Include="wwwroot\Documents\UserComplaints\" />
     <Folder Include="wwwroot\Documents\UserRequests\" />
     <Folder Include="wwwroot\Images\Doctors\" />

@@ -1,19 +1,14 @@
 ﻿@using MedicalAppointmentsSystem
-@using MedicalAppointmentsSystem.Areas.User.Controllers
 @using MedicalAppointmentsSystem.Areas.User.Models.ViewModels
+
 @model List<ComplaintVM>
 @{
-	ViewData["Title"] = "My Complaints";
+	ViewData["Title"] = "Complaints Management";
 	Layout = "_Layout";
 }
 
 <div class="container mt-5">
-	<div class="d-flex justify-content-between align-items-center mb-4">
-		<h1 class="text-primary mb-0"><i class="fas fa-exclamation-circle me-2"></i>@ViewData["Title"]</h1>
-		<a asp-action="FileComplaint" class="btn btn-primary">
-			<i class="fas fa-plus-circle me-2"></i>File Complaint
-		</a>
-	</div>
+	<h1 class="text-primary mb-4"><i class="fas fa-exclamation-triangle me-2"></i>@ViewData["Title"]</h1>
 
 	@if (TempData["Success"] != null)
 	{
@@ -33,7 +28,7 @@
 
 	<div class="card shadow-sm">
 		<div class="card-header bg-primary text-white">
-			<h5 class="mb-0"><i class="fas fa-list me-2"></i>Complaint History</h5>
+			<h5 class="mb-0"><i class="fas fa-list me-2"></i>All Complaints</h5>
 		</div>
 		<div class="card-body">
 			@if (Model.Any())
@@ -47,7 +42,7 @@
 								<th><i class="fas fa-clock me-1"></i> Filed At</th>
 								<th><i class="fas fa-info-circle me-1"></i> Status</th>
 								<th><i class="fas fa-file me-1"></i> Document</th>
-								<th><i class="fas fa-cogs me-1"></i> Actions</th>
+								<th><i class="fas fa-actions me-1"></i> Actions</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -90,15 +85,22 @@
 										}
 									</td>
 									<td>
+										<div class="d-flex gap-2">
+											@if(complaint.ComplaintStatus == StaticDetails.ComplaintUnderReview)
+											{
+												<button type="button" class="btn btn-sm btn-primary"
+														data-bs-toggle="modal"
+														data-bs-target="#complaintModal"
+														onclick="loadComplaintBody('@complaint.Id')">
+													<i class="fas fa-eye me-1"></i> View Body
+												</button>
 
-										@if (complaint.ComplaintStatus == StaticDetails.ComplaintUnderReview)
-										{
-											<button onclick="confirmWithdrawal('@complaint.Id')"
-													class="btn btn-sm btn-outline-danger">
-												<i class="fas fa-times me-1"></i> Withdraw
-											</button>
-										}
-
+												<a asp-action="ForwardComplaint" asp-route-id="@complaint.Id"
+												   class="btn btn-sm btn-primary">
+													<i class="fas fa-share me-1"></i> Forward To Doctor
+												</a>
+											}
+										</div>
 									</td>
 								</tr>
 							}
@@ -110,9 +112,27 @@
 			{
 				<div class="alert alert-info">
 					<h5 class="alert-heading"><i class="fas fa-info-circle me-2"></i>No Complaints Found</h5>
-					<p class="mb-0">You haven't filed any complaints yet. Click the 'File Complaint' button to submit a new complaint.</p>
+					<p class="mb-0">There are no complaints in the system.</p>
 				</div>
 			}
+		</div>
+	</div>
+</div>
+
+<!-- Complaint Body Modal -->
+<div class="modal fade" id="complaintModal" tabindex="-1" aria-labelledby="complaintModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header bg-primary text-white">
+				<h5 class="modal-title" id="complaintModalLabel">Complaint Details</h5>
+				<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body" id="complaintBodyContent">
+				<!-- Content will be loaded here -->
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+			</div>
 		</div>
 	</div>
 </div>
@@ -147,26 +167,26 @@
 	.card-header {
 		border-radius: 10px 10px 0 0 !important;
 	}
+
+	.modal-body {
+		white-space: pre-wrap;
+	}
 </style>
 
 @section Scripts {
-	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 	<script>
-		function confirmWithdrawal(complaintId) {
-			Swal.fire({
-				title: 'Confirm Withdrawal',
-				text: "Are you sure you want to withdraw this complaint?",
-				icon: 'warning',
-				showCancelButton: true,
-				confirmButtonColor: '#d33',
-				cancelButtonColor: '#6c757d',
-				confirmButtonText: 'Yes, withdraw it',
-				cancelButtonText: 'Cancel'
-			}).then((result) => {
-				if (result.isConfirmed) {
-					window.location.href = `/User/Complaints/WithdrawComplaint?complaintId=${complaintId}`;
-				}
-			});
+		function loadComplaintBody(complaintId) {
+			fetch(`/Admin/UserComplaints/GetComplaintBody?id=${complaintId}`)
+				.then(response => response.text())
+				.then(data => {
+					document.getElementById('complaintBodyContent').innerHTML = data;
+					document.getElementById('complaintModalLabel').innerText =
+						`Complaint Details #${complaintId}`;
+				})
+				.catch(error => {
+					document.getElementById('complaintBodyContent').innerHTML =
+						'<div class="alert alert-danger">Failed to load complaint details</div>';
+				});
 		}
 	</script>
 }
