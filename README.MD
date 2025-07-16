@@ -11,7 +11,6 @@ A full-stack medical appointment management web application built with **ASP.NET
 - [User Role](#patient-role)
 - [Admin Role](#admin-role)
 - [Tech Stack](#tech-stack)
-- [Screenshots](#screenshots)
 - [Future Improvements](#future-improvements)
 
 
@@ -101,11 +100,6 @@ The system uses **Leaflet.js** for dynamic clinic location selection and **MailK
 | Uploads          | PDF-only with secure validation      |
 | Architecture     | Layered (MVC, ViewModels, RBAC)      |
 
----
-
-## 📷 Screenshots
-
-![alt text](<Screenshot (243).png>) ![alt text](<Screenshot (234).png>) ![alt text](<Screenshot (235).png>) ![alt text](<Screenshot (236).png>) ![alt text](<Screenshot (237).png>) ![alt text](<Screenshot (238).png>) ![alt text](<Screenshot (239).png>) ![alt text](<Screenshot (240).png>) ![alt text](<Screenshot (241).png>) ![alt text](<Screenshot (242).png>)
 
 ---
 
