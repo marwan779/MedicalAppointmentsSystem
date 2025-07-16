@@ -43,6 +43,7 @@
 
         public const string ComplaintUnderReview = "Complaint Under Review";
         public const string DoctorInformed = "Doctor Informed";
+        public const string DoctorResponded = "Doctor Responded";
         public const string ComplaintWithdrawn = "Complaint Withdrawn";
 
         public static List<string> allowedImageExtensions = new List<string> { ".jpg", ".jpeg", ".png" };

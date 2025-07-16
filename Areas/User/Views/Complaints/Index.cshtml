@@ -70,6 +70,12 @@
 												<i class="fas fa-user-slash me-1"></i> @complaint.ComplaintStatus
 											</span>
 										}
+										else if (complaint.ComplaintStatus == StaticDetails.DoctorResponded)
+										{
+											<span class="badge bg-success">
+												<i class="fas fa-check-circle me-1"></i> @complaint.ComplaintStatus
+											</span>
+										}
 										else
 										{
 											<span class="badge bg-warning text-dark">
@@ -99,6 +105,18 @@
 											</button>
 										}
 
+										@if (complaint.ComplaintStatus == StaticDetails.DoctorResponded)
+										{
+											<button type="button" class="btn btn-sm btn-primary"
+													data-bs-toggle="modal"
+													data-bs-target="#complaintModal"
+													onclick="loadComplaintResponse('@complaint.Id')">
+												<i class="fas fa-eye me-1"></i> View Response
+											</button>
+
+
+										}
+
 									</td>
 								</tr>
 							}
@@ -113,6 +131,25 @@
 					<p class="mb-0">You haven't filed any complaints yet. Click the 'File Complaint' button to submit a new complaint.</p>
 				</div>
 			}
+		</div>
+	</div>
+</div>
+
+
+<!-- Complaint Body Modal -->
+<div class="modal fade" id="complaintModal" tabindex="-1" aria-labelledby="complaintModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header bg-primary text-white">
+				<h5 class="modal-title" id="complaintModalLabel">Complaint Details</h5>
+				<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body" id="complaintBodyContent">
+				<!-- Content will be loaded here -->
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+			</div>
 		</div>
 	</div>
 </div>
@@ -169,4 +206,22 @@
 			});
 		}
 	</script>
+
+
+	<script>
+		function loadComplaintResponse(complaintId) {
+			fetch(`/User/Complaints/GetComplaintResponse?id=${complaintId}`)
+				.then(response => response.text())
+				.then(data => {
+					document.getElementById('complaintBodyContent').innerHTML = data;
+					document.getElementById('complaintModalLabel').innerText =
+						`Complaint Details #${complaintId}`;
+				})
+				.catch(error => {
+					document.getElementById('complaintBodyContent').innerHTML =
+						'<div class="alert alert-danger">Failed to load complaint details</div>';
+				});
+		}
+	</script>
+
 }

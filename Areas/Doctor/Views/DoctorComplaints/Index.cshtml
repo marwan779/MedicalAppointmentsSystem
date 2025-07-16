@@ -1,0 +1,185 @@
+﻿@using MedicalAppointmentsSystem.Areas.Doctor.Models.ViewModels
+@model List<DoctorComplaintVM>
+@{
+    ViewData["Title"] = "Patient Complaints";
+    Layout = "_Layout";
+}
+
+<div class="container mt-5">
+    <h1 class="text-primary mb-4"><i class="fas fa-exclamation-triangle me-2"></i>@ViewData["Title"]</h1>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="fas fa-list me-2"></i>Complaint List</h5>
+        </div>
+        <div class="card-body">
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-heading me-1"></i> Title</th>
+                                <th><i class="fas fa-clinic-medical me-1"></i> Clinic</th>
+                                <th><i class="fas fa-clock me-1"></i> Filed At</th>
+                                <th><i class="fas fa-file me-1"></i> Document</th>
+                                <th><i class="fas fa-check-circle me-1"></i> Status</th>
+                                <th><i class="fas fa-actions me-1"></i> Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var complaint in Model)
+                            {
+                                <tr>
+                                    <td>@complaint.ComplaintTitle</td>
+                                    <td>@complaint.ClinicName</td>
+                                    <td>@complaint.FiledAt.ToString("g")</td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(complaint.DocumentUrl))
+                                        {
+                                            <a href="@complaint.DocumentUrl" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-file-pdf me-1"></i> View
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">None</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (complaint.DoctorResponded)
+                                        {
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-check-circle me-1"></i> Responded
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning text-dark">
+                                                <i class="fas fa-exclamation-circle me-1"></i> Pending Response
+                                            </span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="d-flex gap-2">
+                                            <button type="button" class="btn btn-sm btn-primary"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#complaintModal"
+                                                    onclick="loadComplaintBody('@complaint.Id')">
+                                                <i class="fas fa-eye me-1"></i> Show Body
+                                            </button>
+
+                                            @if (!complaint.DoctorResponded)
+                                            {
+                                                <a asp-action="RespondToComplaint" asp-route-id="@complaint.Id"
+                                                   class="btn btn-sm btn-success">
+                                                    <i class="fas fa-reply me-1"></i> Respond
+                                                </a>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info">
+                    <h5 class="alert-heading"><i class="fas fa-info-circle me-2"></i>No Complaints Found</h5>
+                    <p class="mb-0">You have no patient complaints at this time.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Complaint Body Modal -->
+<div class="modal fade" id="complaintModal" tabindex="-1" aria-labelledby="complaintModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="complaintModalLabel">Complaint Details</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="complaintBodyContent">
+                <!-- Content will be loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <style>
+        .table {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+            .table thead th {
+                background-color: #f8f9fa;
+                border-bottom: 2px solid var(--medical-primary);
+                color: var(--medical-primary);
+            }
+
+        .table-hover tbody tr:hover {
+            background-color: rgba(13, 110, 253, 0.05);
+        }
+
+        .badge {
+            padding: 0.5em 0.75em;
+            font-weight: 500;
+        }
+
+        .card {
+            border-radius: 10px;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .card-header {
+            border-radius: 10px 10px 0 0 !important;
+        }
+
+        .modal-body {
+            white-space: pre-wrap;
+        }
+    </style>
+
+
+@section Scripts {
+    <script>
+        function loadComplaintBody(complaintId) {
+            fetch(`/Doctor/DoctorComplaints/GetComplaintBody?id=${complaintId}`)
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('complaintBodyContent').innerHTML = data;
+                    document.getElementById('complaintModalLabel').innerText =
+                        `Complaint Details #${complaintId}`;
+                })
+                .catch(error => {
+                    document.getElementById('complaintBodyContent').innerHTML =
+                        '<div class="alert alert-danger">Failed to load complaint details</div>';
+                });
+        }
+    </script>
+}

@@ -204,5 +204,18 @@ namespace MedicalAppointmentsSystem.Areas.User.Controllers
             TempData["Success"] = "Your complaint is withdrawn successfully.";
             return RedirectToAction(nameof(Index));
         }
+
+
+        [HttpGet]
+        public IActionResult GetComplaintResponse(int id)
+        {
+            var complaint = _context.UserComplaints.FirstOrDefault(c => c.Id == id);
+            if (complaint == null)
+            {
+                return Content("<div class='alert alert-danger'>Complaint not found</div>");
+            }
+            return Content(complaint.DoctorReponse);
+        }
+
     }
 }

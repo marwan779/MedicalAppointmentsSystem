@@ -10,6 +10,8 @@
         public string ComplaintBody { get; set; } = string.Empty;
         public string? DocumentUrl {  get; set; } = string.Empty;
         public string ComplaintStatus { get; set; }  = StaticDetails.ComplaintUnderReview;
+        public bool DoctorResponded { get; set; } = false;
+        public string? DoctorReponse { get; set; } = string.Empty;
         public DateTime FiledAt { get; set; } = DateTime.Now;
     }
 }

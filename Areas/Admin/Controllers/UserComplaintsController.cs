@@ -113,6 +113,15 @@ namespace MedicalAppointmentsSystem.Areas.Admin.Controllers
 
         }
 
-
+        [HttpGet]
+        public IActionResult GetComplaintResponse(int id)
+        {
+            var complaint = _context.UserComplaints.FirstOrDefault(c => c.Id == id);
+            if (complaint == null)
+            {
+                return Content("<div class='alert alert-danger'>Complaint not found</div>");
+            }
+            return Content(complaint.DoctorReponse);
+        }
     }
 }
